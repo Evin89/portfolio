@@ -1,0 +1,66 @@
+---
+const links = [
+  { href: '/projecten', label: 'Projecten' },
+  { href: '/over',      label: 'Over' },
+  { href: '/contact',   label: 'Contact' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<nav>
+  <a href="/" class="logo">Evin.makes</a>
+  <ul>
+    {links.map(link => (
+      <li>
+        <a
+          href={link.href}
+          class:list={['nav-link', { active: currentPath.startsWith(link.href) }]}
+        >
+          {link.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 3rem;
+    border-bottom: 1px solid var(--c-border);
+    position: sticky;
+    top: 0;
+    background: var(--c-bg);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--c-accent);
+    letter-spacing: 0.02em;
+  }
+
+  ul {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-link {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--c-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--c-accent);
+  }
+</style>

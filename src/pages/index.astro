@@ -1,0 +1,164 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+
+// Haal de laatste 3 projecten op
+const allProjects = await Astro.glob('./projecten/*.md');
+const recentProjects = allProjects
+  .sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime())
+  .slice(0, 3);
+---
+
+<Base title="Home">
+
+  <!-- ── Hero ── -->
+  <section class="hero container">
+    <div class="hero-text">
+      <div class="accent-label" style="margin-bottom:1.5rem">Maker uit Nederland</div>
+      <h1>Ik maak dingen<br>die er <em>toe doen</em></h1>
+      <p>
+        3D printen, CNC-frezen, houtbewerking en miniaturen —
+        van digitaal ontwerp tot tastbaar object.
+      </p>
+      <div class="hero-cta">
+        <a href="/projecten" class="btn">Bekijk projecten</a>
+        <a href="/over" class="btn btn-ghost">Over mij</a>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="label">Machine park</div>
+        <ul class="machine-list mono">
+          <li>Bambu Lab P1S</li>
+          <li>Elegoo Mars 3 Pro</li>
+          <li>TwoTrees TTC 450</li>
+          <li>Tafelzaag + Bandzaag</li>
+        </ul>
+      </div>
+      <div class="stat-card">
+        <div class="label">Materialen</div>
+        <div class="materials">
+          {['PLA', 'PETG', 'ABS', 'Resin', 'Hout', 'Epoxy', 'MDF'].map(m => (
+            <span class="chip">{m}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── Recente projecten ── -->
+  <section class="container section">
+    <div class="section-header">
+      <h2>Recente projecten</h2>
+      <span class="section-count">{allProjects.length} projecten totaal</span>
+    </div>
+
+    <div class="projects-grid">
+      {recentProjects.map(project => (
+        <ProjectCard
+          title={project.frontmatter.title}
+          category={project.frontmatter.category}
+          description={project.frontmatter.description}
+          slug={project.frontmatter.slug}
+          image={project.frontmatter.image}
+          tags={project.frontmatter.tags}
+        />
+      ))}
+    </div>
+
+    <div class="view-all">
+      <a href="/projecten" class="btn btn-ghost">Alle projecten bekijken →</a>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  /* ── Hero ── */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    padding-top: 6rem;
+    padding-bottom: 5rem;
+  }
+
+  .hero-text h1 { margin-bottom: 1.5rem; }
+  .hero-text p  { margin-bottom: 2.5rem; max-width: 420px; font-size: 1rem; }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .stat-card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  .stat-card .label {
+    margin-bottom: 1rem;
+  }
+
+  .machine-list {
+    list-style: none;
+    font-size: 13px;
+    color: var(--c-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .machine-list li::before {
+    content: '→ ';
+    color: var(--c-accent);
+  }
+
+  .materials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--c-text);
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  /* ── Projects grid ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .view-all {
+    margin-top: 3rem;
+    text-align: center;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 800px) {
+    .hero { grid-template-columns: 1fr; gap: 3rem; }
+    .projects-grid { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,204 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+
+<Base title="Contact">
+  <div class="container section">
+    <h1 style="margin-bottom:3rem">Neem contact op</h1>
+
+    <div class="contact-grid">
+
+      <!-- Links -->
+      <div>
+        <div class="label" style="margin-bottom:1.25rem">Sociale media</div>
+        <div class="contact-links">
+          <a href="https://instagram.com/evin.makes" target="_blank" rel="noopener" class="contact-link">
+            <span class="platform mono">Instagram</span>
+            <span class="handle">@evin.makes</span>
+            <span class="arrow">↗</span>
+          </a>
+          <a href="https://reddit.com/u/evin_makes" target="_blank" rel="noopener" class="contact-link">
+            <span class="platform mono">Reddit</span>
+            <span class="handle">u/evin_makes</span>
+            <span class="arrow">↗</span>
+          </a>
+        </div>
+
+        <div class="label" style="margin-top:3rem;margin-bottom:1rem">Subreddits</div>
+        <div class="subreddits">
+          {['r/3Dprinting', 'r/resin', 'r/minipainting', 'r/woodworking', 'r/Necromunda'].map(r => (
+            <span class="chip">{r}</span>
+          ))}
+        </div>
+      </div>
+
+      <!-- Contact form -->
+      <div class="form-card">
+        <form id="contact-form" novalidate>
+          <div class="form-field">
+            <label class="label" for="name">Naam</label>
+            <input type="text" id="name" name="name" placeholder="Jouw naam" required />
+          </div>
+          <div class="form-field">
+            <label class="label" for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="jij@voorbeeld.nl" required />
+          </div>
+          <div class="form-field">
+            <label class="label" for="message">Bericht</label>
+            <textarea id="message" name="message" rows="5" placeholder="Vertel me over jouw project..." required></textarea>
+          </div>
+          <button type="submit" class="btn" style="width:100%">Verstuur bericht →</button>
+          <div id="form-status" class="form-status" aria-live="polite"></div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</Base>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  /* Links */
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+
+  .contact-link:hover { border-color: var(--c-accent); }
+
+  .platform {
+    font-size: 12px;
+    color: var(--c-accent);
+    width: 90px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .handle {
+    font-size: 13px;
+    color: var(--c-muted);
+    flex: 1;
+  }
+
+  .arrow {
+    color: var(--c-muted);
+    font-size: 12px;
+    transition: color 0.2s;
+  }
+
+  .contact-link:hover .arrow { color: var(--c-accent); }
+
+  .subreddits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--c-muted);
+    border: 1px solid var(--c-border);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  /* Form */
+  .form-card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    padding: 2rem;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  input, textarea {
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 2px;
+    padding: 0.7rem 1rem;
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+    width: 100%;
+  }
+
+  input:focus, textarea:focus { border-color: var(--c-accent); }
+  input::placeholder, textarea::placeholder { color: var(--c-muted); }
+
+  .form-status {
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .form-status.success { color: var(--c-accent2); }
+  .form-status.error   { color: #e05a5a; }
+
+  @media (max-width: 800px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+  }
+</style>
+
+<script>
+  // Simpele client-side validatie
+  // Voor echte email: gebruik Netlify Forms, Formspree, of een eigen API endpoint
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const status = document.getElementById('form-status')!;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+    btn.textContent = 'Versturen...';
+    btn.disabled = true;
+
+    // TODO: koppel aan Netlify Forms, Formspree (https://formspree.io) of eigen endpoint
+    // Voorbeeld voor Formspree:
+    // const res = await fetch('https://formspree.io/f/JOUW_FORM_ID', {
+    //   method: 'POST',
+    //   body: new FormData(form),
+    //   headers: { Accept: 'application/json' }
+    // });
+
+    // Simulatie voor nu
+    await new Promise(r => setTimeout(r, 800));
+
+    status.textContent = 'Bericht ontvangen! Ik reageer zo snel mogelijk.';
+    status.className = 'form-status success';
+    form.reset();
+    btn.textContent = 'Verstuur bericht →';
+    btn.disabled = false;
+  });
+</script>

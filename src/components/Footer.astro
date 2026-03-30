@@ -1,0 +1,59 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="logo">Evin.makes</span>
+      <div class="footer-links">
+        <a href="https://instagram.com/evin.makes" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://reddit.com/u/evin_makes" target="_blank" rel="noopener">Reddit</a>
+      </div>
+      <span class="copy">&copy; {year} Evin</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--c-border);
+    padding: 2rem 0;
+    margin-top: 4rem;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--c-accent);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .footer-links a {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--c-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--c-accent); }
+
+  .copy {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--c-muted);
+  }
+</style>

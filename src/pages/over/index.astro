@@ -1,0 +1,168 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+
+<Base title="Over" description="Maker uit Nuenen, Noord-Brabant — 3D printen, CNC, houtbewerking en miniaturen.">
+  <div class="container section">
+    <div class="about-grid">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="avatar-block">
+          <!-- Vervang dit door je eigen foto: <img src="/images/foto.jpg" alt="Evin" /> -->
+          <div class="avatar-placeholder">E</div>
+        </div>
+        <div class="sidebar-info">
+          <div class="name">Evin</div>
+          <div class="location label">Nuenen, Noord-Brabant</div>
+        </div>
+
+        <div class="tools-section">
+          <div class="label" style="margin-bottom:1rem">Machine park</div>
+          {[
+            { name: 'Bambu Lab P1S',     tag: 'FDM' },
+            { name: 'Elegoo Mars 3 Pro', tag: 'Resin' },
+            { name: 'TwoTrees TTC 450',  tag: 'CNC' },
+            { name: 'Tafelzaag',         tag: 'Hout' },
+            { name: 'Bandzaag',          tag: 'Hout' },
+            { name: 'Vlak-/vandiktebank',tag: 'Hout' },
+          ].map(tool => (
+            <div class="tool-row">
+              <span class="tool-name">{tool.name}</span>
+              <span class="tool-tag">{tool.tag}</span>
+            </div>
+          ))}
+        </div>
+      </aside>
+
+      <!-- Body -->
+      <div class="body">
+        <h1>Over mij</h1>
+
+        <p>
+          Ik ben een maker uit Noord-Brabant met een brede interesse in het snijvlak van
+          digitaal ontwerp en fysieke fabricage. Van 3D printen en CNC-frezen tot houtbewerking
+          en tabletop hobby — ik maak het liefst dingen die zowel functioneel als mooi zijn.
+        </p>
+
+        <p>
+          Mijn werkplaats is uitgerust met een uitgebreide machine-setup die mij in staat stelt
+          om vrijwel elk materiaal te bewerken: kunststof, hout, resin en meer.
+        </p>
+
+        <p>
+          Naast het pure maken ben ik ook gefascineerd door het proces zelf — parametrisch
+          ontwerpen, materiaalonderzoek, en het verfijnen van workflows. Dit portfolio is een
+          levend document van wat ik maak en leer.
+        </p>
+
+        <div class="skills">
+          <div class="label" style="margin-bottom:1rem">Vaardigheden</div>
+          <div class="chips">
+            {[
+              'Fusion 360', 'FDM Printing', 'Resin Casting', 'CNC Routing',
+              'Epoxy Inlay', 'Kitbashing', 'Houtbewerking', 'Python', 'Necromunda'
+            ].map(s => (
+              <span class="chip">{s}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</Base>
+
+<style>
+  .about-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  /* Sidebar */
+  .avatar-block {
+    margin-bottom: 1.5rem;
+  }
+
+  .avatar-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 4rem;
+    color: var(--c-accent);
+    opacity: 0.5;
+  }
+
+  .avatar-block img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--c-border);
+  }
+
+  .name {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .location { margin-bottom: 2rem; }
+
+  .tools-section { margin-top: 1.5rem; }
+
+  .tool-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--c-border);
+    font-size: 13px;
+  }
+
+  .tool-name { color: var(--c-text); }
+
+  .tool-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--c-accent);
+    background: rgba(200, 169, 110, 0.1);
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+
+  /* Body */
+  .body h1 { margin-bottom: 2rem; }
+  .body p   { margin-bottom: 1.5rem; font-size: 1rem; }
+
+  .skills { margin-top: 3rem; }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--c-text);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    padding: 4px 12px;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 800px) {
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .avatar-placeholder { max-width: 200px; }
+  }
+</style>

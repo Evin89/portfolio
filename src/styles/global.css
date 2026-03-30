@@ -1,0 +1,135 @@
+/* ── Design tokens ── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500&display=swap');
+
+:root {
+  --c-bg:       #0f0e0d;
+  --c-surface:  #1a1917;
+  --c-border:   #2e2c29;
+  --c-text:     #e8e4de;
+  --c-muted:    #7a7670;
+  --c-accent:   #c8a96e;
+  --c-accent2:  #7eb8a4;
+
+  --font-display: 'DM Serif Display', serif;
+  --font-body:    'Outfit', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--c-text);
+}
+h1 { font-size: clamp(2.5rem, 5vw, 3.8rem); }
+h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); }
+h3 { font-size: 1.25rem; }
+
+p { color: var(--c-muted); line-height: 1.85; }
+
+em { font-style: italic; color: var(--c-accent); }
+
+a { color: inherit; text-decoration: none; }
+
+/* ── Utility ── */
+.mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.accent-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-accent2);
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.8rem 1.75rem;
+  background: var(--c-accent);
+  color: #0f0e0d;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+.btn:hover { opacity: 0.85; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--c-accent);
+  border: 1px solid var(--c-border);
+}
+.btn-ghost:hover { border-color: var(--c-accent); }
+
+/* ── Cards ── */
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--c-accent); }
+
+/* ── Layout ── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 3rem;
+}
+
+.section {
+  padding: 5rem 0;
+}
+
+/* ── Section header ── */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+.section-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--c-muted);
+}
+
+/* ── Divider ── */
+hr {
+  border: none;
+  border-top: 1px solid var(--c-border);
+}

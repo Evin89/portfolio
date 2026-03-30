@@ -1,0 +1,102 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+
+const allProjects = await Astro.glob('./*.md');
+const sorted = allProjects.sort(
+  (a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+);
+
+const categories = [...new Set(sorted.map(p => p.frontmatter.category))];
+---
+
+<Base title="Projecten" description="Alle maker-projecten van Evin — 3D printen, CNC, houtbewerking en miniaturen.">
+  <div class="container section">
+    <div class="section-header">
+      <h1>Projecten</h1>
+      <span class="section-count">{sorted.length} werken</span>
+    </div>
+
+    <!-- Filter chips -->
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">Alle</button>
+      {categories.map(cat => (
+        <button class="filter-btn" data-filter={cat}>{cat}</button>
+      ))}
+    </div>
+
+    <div class="projects-grid" id="projects-grid">
+      {sorted.map(project => (
+        <div class="project-item" data-category={project.frontmatter.category}>
+          <ProjectCard
+            title={project.frontmatter.title}
+            category={project.frontmatter.category}
+            description={project.frontmatter.description}
+            slug={project.frontmatter.slug}
+            image={project.frontmatter.image}
+            tags={project.frontmatter.tags}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</Base>
+
+<style>
+  .filters {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .filter-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    background: transparent;
+    border: 1px solid var(--c-border);
+    border-radius: 2px;
+    color: var(--c-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    border-color: var(--c-accent);
+    color: var(--c-accent);
+    background: rgba(200, 169, 110, 0.06);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .project-item.hidden { display: none; }
+
+  @media (max-width: 800px) {
+    .projects-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const items   = document.querySelectorAll<HTMLElement>('.project-item');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+      items.forEach(item => {
+        item.classList.toggle('hidden', filter !== 'all' && item.dataset.category !== filter);
+      });
+    });
+  });
+</script>
