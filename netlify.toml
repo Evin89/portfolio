@@ -1,3 +1,11 @@
 [build]
-  command = "npx astro build"
+  command = "npm run build"
   publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+  [plugins.inputs]
+    fail_deploy_on_score_thresholds = "false"
