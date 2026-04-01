@@ -7,7 +7,7 @@
     "build": "node node_modules/astro/bin/astro.js build",
     "preview": "astro preview"
   },
-  "dependencies": {
-    "astro": "^6.1.1"
+  "devDependencies": {
+    "astro": "^6.1.2"
   }
 }
