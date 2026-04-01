@@ -1,0 +1,181 @@
+---
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const projects = Object.values(
+    import.meta.glob('./*.md', { eager: true })
+  );
+
+  return projects.map((project: any) => ({
+    params: { slug: project.frontmatter.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { title, category, description, image, tags, date } = project.frontmatter;
+const Content = project.Content;
+
+const formattedDate = new Date(date).toLocaleDateString('nl-NL', {
+  year: 'numeric',
+  month: 'long',
+});
+---
+
+<Base title={title} description={description}>
+  <div class="container">
+
+    <!-- Header -->
+    <header class="project-header">
+      <a href="/projecten" class="back-link mono">← Alle projecten</a>
+      <div class="accent-label" style="margin: 1.5rem 0 0.5rem">{category}</div>
+      <h1>{title}</h1>
+      <div class="meta">
+        <span class="mono">{formattedDate}</span>
+        <div class="tags">
+          {tags?.map((tag: string) => <span class="tag">{tag}</span>)}
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero afbeelding -->
+    {image && (
+      <div class="hero-image">
+        <img src={image} alt={title} />
+      </div>
+    )}
+
+    <!-- Inhoud -->
+    <div class="project-body">
+      <Content />
+    </div>
+
+  </div>
+</Base>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem;
+  }
+
+  .back-link {
+    font-size: 12px;
+    color: var(--c-muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--c-accent); }
+
+  .project-header {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--c-border);
+    margin-bottom: 2.5rem;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 1.25rem;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .meta .mono {
+    font-size: 12px;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--c-accent);
+    background: rgba(200, 169, 110, 0.1);
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  /* Hero afbeelding */
+  .hero-image {
+    margin-bottom: 3rem;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Markdown inhoud */
+  .project-body {
+    color: var(--c-muted);
+    line-height: 1.85;
+    font-size: 1rem;
+  }
+
+  .project-body :global(h2) {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--c-text);
+    margin: 2.5rem 0 1rem;
+  }
+
+  .project-body :global(h3) {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--c-text);
+    margin: 2rem 0 0.75rem;
+  }
+
+  .project-body :global(p) {
+    margin-bottom: 1.25rem;
+  }
+
+  .project-body :global(ul),
+  .project-body :global(ol) {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .project-body :global(li) {
+    margin-bottom: 0.4rem;
+  }
+
+  .project-body :global(li::marker) {
+    color: var(--c-accent);
+  }
+
+  .project-body :global(strong) {
+    color: var(--c-text);
+    font-weight: 500;
+  }
+
+  .project-body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--c-surface);
+    padding: 2px 6px;
+    border-radius: 2px;
+    color: var(--c-accent2);
+  }
+</style>

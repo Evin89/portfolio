@@ -1,0 +1,85 @@
+---
+interface Props {
+  name: string;
+  slug: string;
+  category: string;
+  description: string;
+  image?: string;
+  tags?: string[];
+}
+
+const { name, slug, category, description, image, tags = [] } = Astro.props;
+---
+
+<a href={`/tools/${slug}`} class="tool-card card">
+  <div class="thumb" style={image ? `background-image: url(${image})` : ''}>
+    {!image && <div class="thumb-placeholder" />}
+    <span class="thumb-label mono">{tags.slice(0, 2).join(' · ')}</span>
+  </div>
+  <div class="info">
+    <div class="category accent-label">{category}</div>
+    <h3>{name}</h3>
+    <p>{description}</p>
+  </div>
+</a>
+
+<style>
+  .tool-card {
+    display: block;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .thumb {
+    height: 200px;
+    background-color: var(--c-surface);
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0.75rem;
+  }
+
+  .thumb-placeholder {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(200,169,110,0.03) 20px,
+      rgba(200,169,110,0.03) 40px
+    );
+  }
+
+  .thumb-label {
+    font-size: 10px;
+    color: var(--c-muted);
+    background: var(--c-bg);
+    padding: 3px 10px;
+    border-radius: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .info { padding: 1.25rem; }
+
+  .category { margin-bottom: 0.4rem; }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 0.4rem;
+    color: var(--c-text);
+    transition: color 0.2s;
+  }
+
+  .tool-card:hover h3 { color: var(--c-accent); }
+
+  p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+</style>

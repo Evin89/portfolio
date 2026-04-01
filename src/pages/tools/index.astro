@@ -1,0 +1,98 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolCard from '../../components/ToolCard.astro';
+
+const allTools = Object.values(import.meta.glob('./*.md', { eager: true }));
+const sorted = allTools.sort((a: any, b: any) => a.frontmatter.name.localeCompare(b.frontmatter.name));
+
+const categories = [...new Set(sorted.map((t: any) => t.frontmatter.category))];
+---
+
+<Base title="Tools" description="Het machine park en gereedschap van Evin — 3D printers, CNC, houtbewerking en meer.">
+  <div class="container section">
+    <div class="section-header">
+      <h1>Tools</h1>
+      <span class="section-count">{sorted.length} machines</span>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">Alle</button>
+      {categories.map(cat => (
+        <button class="filter-btn" data-filter={cat}>{cat}</button>
+      ))}
+    </div>
+
+    <div class="tools-grid" id="tools-grid">
+      {sorted.map((tool: any) => (
+        <div class="tool-item" data-category={tool.frontmatter.category}>
+          <ToolCard
+            name={tool.frontmatter.name}
+            slug={tool.frontmatter.slug}
+            category={tool.frontmatter.category}
+            description={tool.frontmatter.description}
+            image={tool.frontmatter.image}
+            tags={tool.frontmatter.tags}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</Base>
+
+<style>
+  .filters {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .filter-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    background: transparent;
+    border: 1px solid var(--c-border);
+    border-radius: 2px;
+    color: var(--c-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    border-color: var(--c-accent);
+    color: var(--c-accent);
+    background: rgba(200, 169, 110, 0.06);
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .tool-item.hidden { display: none; }
+
+  @media (max-width: 800px) {
+    .tools-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const items   = document.querySelectorAll<HTMLElement>('.tool-item');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      items.forEach(item => {
+        item.classList.toggle('hidden', filter !== 'all' && item.dataset.category !== filter);
+      });
+    });
+  });
+</script>

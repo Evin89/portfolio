@@ -1,0 +1,125 @@
+---
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const tools = Object.values(import.meta.glob('./*.md', { eager: true }));
+  return tools.map((tool: any) => ({
+    params: { slug: tool.frontmatter.slug },
+    props: { tool },
+  }));
+}
+
+const { tool } = Astro.props;
+const { name, category, description, image, tags } = tool.frontmatter;
+const Content = tool.Content;
+---
+
+<Base title={name} description={description}>
+  <div class="container">
+
+    <header class="tool-header">
+      <a href="/tools" class="back-link mono">← Alle tools</a>
+      <div class="accent-label" style="margin: 1.5rem 0 0.5rem">{category}</div>
+      <h1>{name}</h1>
+      <div class="tags">
+        {tags?.map((tag: string) => <span class="tag">{tag}</span>)}
+      </div>
+    </header>
+
+    {image && (
+      <div class="hero-image">
+        <img src={image} alt={name} />
+      </div>
+    )}
+
+    <div class="tool-body">
+      <Content />
+    </div>
+
+  </div>
+</Base>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 3rem;
+  }
+
+  .back-link {
+    font-size: 12px;
+    color: var(--c-muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--c-accent); }
+
+  .tool-header {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--c-border);
+    margin-bottom: 2.5rem;
+  }
+
+  h1 { margin-bottom: 1.25rem; }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--c-accent);
+    background: rgba(200, 169, 110, 0.1);
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  .hero-image {
+    margin-bottom: 3rem;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .tool-body {
+    color: var(--c-muted);
+    line-height: 1.85;
+    font-size: 1rem;
+  }
+
+  .tool-body :global(h2) {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--c-text);
+    margin: 2.5rem 0 1rem;
+  }
+
+  .tool-body :global(p) { margin-bottom: 1.25rem; }
+
+  .tool-body :global(ul) {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .tool-body :global(li) { margin-bottom: 0.4rem; }
+
+  .tool-body :global(li::marker) { color: var(--c-accent); }
+
+  .tool-body :global(strong) {
+    color: var(--c-text);
+    font-weight: 500;
+  }
+</style>
