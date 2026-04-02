@@ -16,8 +16,9 @@ const { title, description = 'Maker portfolio van Evin — 3D printen, CNC, hout
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <title>{title} · Evin.makes</title>
+    <title>{title} · Builder Basement</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>
     <Nav />
@@ -25,5 +26,16 @@ const { title, description = 'Maker portfolio van Evin — 3D printen, CNC, hout
       <slot />
     </main>
     <Footer />
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", user => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+      }
+    </script>
   </body>
 </html>
