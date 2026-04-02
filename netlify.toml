@@ -1,3 +1,3 @@
 [build]
-  command = "npm install && node ./node_modules/astro/dist/cli/index.js build"
+  command = "npm install && node ./node_modules/astro/dist/cli/index.js build && cp -r public/admin dist/admin"
   publish = "dist"

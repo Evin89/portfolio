@@ -1,5 +1,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://evin.makes',
+  site: 'https://builderbasement.com',
+  publicDir: 'public',
+  outDir: 'dist',
 });
