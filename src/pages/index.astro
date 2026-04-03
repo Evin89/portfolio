@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 
 // Haal de laatste 3 projecten op
-const allProjects = Object.values(import.meta.glob('.content/projecten/*.md', { eager: true }));
+const allProjects = Object.values(import.meta.glob('../content/projecten/*.md', { eager: true }));
 const recentProjects = allProjects
   .sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime())
   .slice(0, 3);
