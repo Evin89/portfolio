@@ -1,3 +1,3 @@
 [build]
-  command = "npm install && node ./node_modules/astro/dist/cli/index.js build && mkdir -p dist/admin && cp public/admin/index.html dist/admin/ && cp public/admin/config.yml dist/admin/"
+  command = "npm ci && npm run build && mkdir -p dist/admin && cp public/admin/index.html dist/admin/ && cp public/admin/config.yml dist/admin/"
   publish = "dist"
