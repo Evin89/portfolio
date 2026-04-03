@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 
 export async function getStaticPaths() {
-  const tools = Object.values(import.meta.glob('./*.md', { eager: true }));
+  const tools = Object.values(import.meta.glob('../../content/tools/*.md', { eager: true }));
   return tools.map((tool: any) => ({
     params: { slug: tool.frontmatter.slug },
     props: { tool },
