@@ -2,31 +2,30 @@
 import Base from '../../layouts/Base.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 
-const allProjects = Object.values(import.meta.glob('./*.md', { eager: true }));
-const sorted = allProjects.sort(
-  (a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+const allProjects = Object.values(import.meta.glob('../../content/projecten/*.md', { eager: true }));
+const sorted = allProjects.sort((a: any, b: any) =>
+  new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
 );
 
-const categories = [...new Set(sorted.map(p => p.frontmatter.category))];
+const categories = [...new Set(sorted.map((p: any) => p.frontmatter.category))];
 ---
 
-<Base title="Projecten" description="Alle maker-projecten van Evin — 3D printen, CNC, houtbewerking en miniaturen.">
+<Base title="Projecten" description="Alle maker-projecten — 3D printen, CNC, houtbewerking en miniaturen.">
   <div class="container section">
     <div class="section-header">
       <h1>Projecten</h1>
       <span class="section-count">{sorted.length} werken</span>
     </div>
 
-    <!-- Filter chips -->
     <div class="filters">
       <button class="filter-btn active" data-filter="all">Alle</button>
-      {categories.map(cat => (
+      {categories.map((cat: any) => (
         <button class="filter-btn" data-filter={cat}>{cat}</button>
       ))}
     </div>
 
     <div class="projects-grid" id="projects-grid">
-      {sorted.map(project => (
+      {sorted.map((project: any) => (
         <div class="project-item" data-category={project.frontmatter.category}>
           <ProjectCard
             title={project.frontmatter.title}
@@ -92,7 +91,6 @@ const categories = [...new Set(sorted.map(p => p.frontmatter.category))];
     btn.addEventListener('click', () => {
       buttons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
       const filter = btn.dataset.filter;
       items.forEach(item => {
         item.classList.toggle('hidden', filter !== 'all' && item.dataset.category !== filter);

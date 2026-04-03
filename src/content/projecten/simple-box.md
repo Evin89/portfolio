@@ -12,3 +12,9 @@ image: "/images/box1.png"
 
 Een simpel houten doosje van vurenhout.
 
+## Waarom vurenhout
+
+Simpel goedkoop vurenhout wat ik had liggen.
+
+## Bouw
+

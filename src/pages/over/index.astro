@@ -20,12 +20,16 @@ import Base from '../../layouts/Base.astro';
         <div class="tools-section">
           <div class="label" style="margin-bottom:1rem">Machine park</div>
           {[
-            { name: 'Bambu Lab P1S',     tag: 'FDM' },
-            { name: 'Elegoo Mars 3 Pro', tag: 'Resin' },
-            { name: 'TwoTrees TTC 450',  tag: 'CNC' },
-            { name: 'Tafelzaag',         tag: 'Hout' },
-            { name: 'Bandzaag',          tag: 'Hout' },
-            { name: 'Vlak-/vandiktebank',tag: 'Hout' },
+            { name: 'Bambu Lab P1S',     tag: '3D' },
+            { name: 'Elegoo Mars 3 Pro', tag: '3D' },
+            { name: 'TwoTrees TTC 450 Pro',  tag: 'CNC' },
+            { name: 'Dewalt 7485 Tafelzaag', tag: 'Hout' },
+            { name: 'HiKOKI C8FSHGWAZ', tag: 'Hout'},
+            { name: 'Recordpower Sabre 250 Lintzaag', tag: 'Hout' },
+            { name: '8" Vlak-/vandiktebank',tag: 'Hout' },
+            { name: 'Bosch PBD40 Kolomboor',tag: 'Hout' },
+            { name: 'Makita RTC0700 Router',tag: 'Hout' },
+            
           ].map(tool => (
             <div class="tool-row">
               <span class="tool-name">{tool.name}</span>

@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 
 export async function getStaticPaths() {
   const projects = Object.values(
-    import.meta.glob('./*.md', { eager: true })
+    import.meta.glob('../../content/projecten/*.md', { eager: true })
   );
 
   return projects.map((project: any) => ({
@@ -25,7 +25,6 @@ const formattedDate = new Date(date).toLocaleDateString('nl-NL', {
 <Base title={title} description={description}>
   <div class="container">
 
-    <!-- Header -->
     <header class="project-header">
       <a href="/projecten" class="back-link mono">← Alle projecten</a>
       <div class="accent-label" style="margin: 1.5rem 0 0.5rem">{category}</div>
@@ -38,14 +37,12 @@ const formattedDate = new Date(date).toLocaleDateString('nl-NL', {
       </div>
     </header>
 
-    <!-- Hero afbeelding -->
     {image && (
       <div class="hero-image">
         <img src={image} alt={title} />
       </div>
     )}
 
-    <!-- Inhoud -->
     <div class="project-body">
       <Content />
     </div>
@@ -110,7 +107,6 @@ const formattedDate = new Date(date).toLocaleDateString('nl-NL', {
     border-radius: 2px;
   }
 
-  /* Hero afbeelding */
   .hero-image {
     margin-bottom: 3rem;
     border-radius: 4px;
@@ -126,7 +122,6 @@ const formattedDate = new Date(date).toLocaleDateString('nl-NL', {
     display: block;
   }
 
-  /* Markdown inhoud */
   .project-body {
     color: var(--c-muted);
     line-height: 1.85;
