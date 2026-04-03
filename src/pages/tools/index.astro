@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import ToolCard from '../../components/ToolCard.astro';
 
-const allTools = Object.values(import.meta.glob('..content/tools/*.md', { eager: true }));
+const allTools = Object.values(import.meta.glob('../../content/tools/*.md', { eager: true }));
 const sorted = allTools.sort((a: any, b: any) => a.frontmatter.name.localeCompare(b.frontmatter.name));
 
 const categories = [...new Set(sorted.map((t: any) => t.frontmatter.category))];
