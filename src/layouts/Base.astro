@@ -26,16 +26,22 @@ const { title, description = 'Maker portfolio van Evin — 3D printen, CNC, hout
       <slot />
     </main>
     <Footer />
-    <script>
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", user => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.href = "/admin/";
-            });
-          }
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
         });
       }
-    </script>
+    });
+
+    // Open de widget automatisch als er een recovery token in de URL zit
+    const hash = window.location.hash;
+    if (hash && (hash.includes('recovery_token') || hash.includes('invite_token') || hash.includes('confirmation_token'))) {
+      window.netlifyIdentity.open();
+    }
+  }
+</script>
   </body>
 </html>
