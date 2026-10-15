@@ -1,176 +1,134 @@
 ---
+import { render, getEntries } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Figure from '../../components/Figure.astro';
+import TitleBlock from '../../components/TitleBlock.astro';
+import { getProjects, existingImage, formatMonth, type Project } from '../../lib/content';
 
 export async function getStaticPaths() {
-  const projects = Object.values(
-    import.meta.glob('../../content/projecten/*.md', { eager: true })
-  );
-
-  return projects.map((project: any) => ({
-    params: { slug: project.frontmatter.slug },
-    props: { project },
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    // lijst is nieuwste eerst: "vorig" is ouder (i + 1), "volgend" is nieuwer (i - 1)
+    props: { project, prev: projects[i + 1], next: projects[i - 1] },
   }));
 }
 
-const { project } = Astro.props;
-const { title, category, description, image, tags, date } = project.frontmatter;
-const Content = project.Content;
+interface Props {
+  project: Project;
+  prev?: Project;
+  next?: Project;
+}
 
-const formattedDate = new Date(date).toLocaleDateString('nl-NL', {
-  year: 'numeric',
-  month: 'long',
-});
+const { project, prev, next } = Astro.props;
+const { title, category, description, date, tags, image, gallery, machine, dimensions } = project.data;
+const { Content } = await render(project);
+const usedTools = await getEntries(project.data.tools);
+const cover = existingImage(image);
+const extra = gallery.map((g) => existingImage(g)).filter((g): g is string => Boolean(g));
 ---
 
-<Base title={title} description={description}>
+<Base title={title} description={description} image={cover}>
   <div class="container">
+    <nav class="crumbs mono" aria-label="Kruimelpad">
+      <a href="/projecten">Projecten</a>
+      <span aria-hidden="true">/</span>
+      <a href={`/projecten?categorie=${encodeURIComponent(category)}`}>{category}</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{project.nr}</span>
+    </nav>
 
-    <header class="project-header">
-      <a href="/projecten" class="back-link mono">← Alle projecten</a>
-      <div class="accent-label" style="margin: 1.5rem 0 0.5rem">{category}</div>
+    <header class="intro">
+      <div class="nr mono">Onderdeel {project.nr}</div>
       <h1>{title}</h1>
-      <div class="meta">
-        <span class="mono">{formattedDate}</span>
-        <div class="tags">
-          {tags?.map((tag: string) => <span class="tag">{tag}</span>)}
-        </div>
-      </div>
+      <p class="lead">{description}</p>
     </header>
 
-    {image && (
-      <div class="hero-image">
-        <img src={image} alt={title} />
-      </div>
-    )}
+    <section class="split">
+      <Figure src={cover} alt={title} caption="Fig. 1 — Overzicht" size="tile-l" dimensions={dimensions} eager />
+      <TitleBlock
+        rows={[
+          { label: 'Nummer', value: project.nr, accent: true },
+          { label: 'Categorie', value: category, href: `/projecten?categorie=${encodeURIComponent(category)}` },
+          { label: 'Datum', value: formatMonth(date) },
+          { label: 'Machine', value: machine },
+        ]}
+        tags={tags}
+        links={usedTools.map((t) => ({ label: t.data.name, href: `/tools/${t.id}` }))}
+      />
+    </section>
 
-    <div class="project-body">
-      <Content />
-    </div>
+    <section class="body">
+      <article class="prose">
+        <Content />
+      </article>
+      {extra.length > 0 && (
+        <div class="gallery">
+          {extra.map((src, i) => (
+            <Figure src={src} alt={`${title}, detail ${i + 1}`} caption={`Fig. ${i + 2} — Detail`} size="tile" />
+          ))}
+        </div>
+      )}
+    </section>
 
+    <nav class="pager" aria-label="Andere projecten">
+      {prev ? (
+        <a href={`/projecten/${prev.id}`}>
+          <span class="label">← Vorig · {prev.nr}</span>
+          <span class="t">{prev.data.title}</span>
+        </a>
+      ) : <span />}
+      {next && (
+        <a href={`/projecten/${next.id}`} class="right">
+          <span class="label">Volgend · {next.nr} →</span>
+          <span class="t">{next.data.title}</span>
+        </a>
+      )}
+    </nav>
   </div>
 </Base>
 
 <style>
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 3rem;
-  }
+  .crumbs { padding-top: 28px; font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px; }
+  .crumbs a { color: var(--muted); }
+  .crumbs a:hover { color: var(--mark); }
+  .crumbs [aria-current] { color: var(--ink); }
 
-  .back-link {
-    font-size: 12px;
-    color: var(--c-muted);
-    text-decoration: none;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-  }
-  .back-link:hover { color: var(--c-accent); }
+  .intro { padding: 40px 0 48px; }
+  .nr { font-size: 13px; letter-spacing: 0.14em; color: var(--mark); }
+  h1 { margin-top: 14px; font-size: clamp(3.2rem, 8vw, 6rem); line-height: 0.95; }
+  .lead { max-width: 640px; margin-top: 22px; font-size: 20px; }
 
-  .project-header {
-    padding: 3rem 0 2rem;
-    border-bottom: 1px solid var(--c-border);
-    margin-bottom: 2.5rem;
+  .split {
+    display: grid;
+    grid-template-columns: auto minmax(280px, 1fr);
+    gap: 56px;
+    align-items: start;
   }
-
-  h1 {
-    font-size: clamp(2rem, 4vw, 3rem);
-    margin-bottom: 1.25rem;
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 56px;
+    padding-top: 88px;
   }
+  .gallery { display: flex; flex-direction: column; gap: 40px; }
 
-  .meta {
+  .pager {
     display: flex;
-    align-items: center;
-    gap: 1.5rem;
     flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 112px;
+    padding: 28px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
   }
+  .pager a { display: flex; flex-direction: column; gap: 4px; padding: 4px 0; color: var(--ink); }
+  .pager a.right { text-align: right; margin-left: auto; }
+  .pager .t { font-family: var(--font-display); font-size: 26px; }
+  .pager a:hover .t { color: var(--mark); }
 
-  .meta .mono {
-    font-size: 12px;
-    color: var(--c-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .tags {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--c-accent);
-    background: rgba(200, 169, 110, 0.1);
-    padding: 3px 10px;
-    border-radius: 2px;
-  }
-
-  .hero-image {
-    margin-bottom: 3rem;
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid var(--c-border);
-  }
-
-  .hero-image img {
-    width: 100%;
-    height: auto;
-    max-height: 500px;
-    object-fit: cover;
-    display: block;
-  }
-
-  .project-body {
-    color: var(--c-muted);
-    line-height: 1.85;
-    font-size: 1rem;
-  }
-
-  .project-body :global(h2) {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    color: var(--c-text);
-    margin: 2.5rem 0 1rem;
-  }
-
-  .project-body :global(h3) {
-    font-family: var(--font-display);
-    font-size: 1.2rem;
-    color: var(--c-text);
-    margin: 2rem 0 0.75rem;
-  }
-
-  .project-body :global(p) {
-    margin-bottom: 1.25rem;
-  }
-
-  .project-body :global(ul),
-  .project-body :global(ol) {
-    padding-left: 1.5rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .project-body :global(li) {
-    margin-bottom: 0.4rem;
-  }
-
-  .project-body :global(li::marker) {
-    color: var(--c-accent);
-  }
-
-  .project-body :global(strong) {
-    color: var(--c-text);
-    font-weight: 500;
-  }
-
-  .project-body :global(code) {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    background: var(--c-surface);
-    padding: 2px 6px;
-    border-radius: 2px;
-    color: var(--c-accent2);
+  @media (max-width: 1100px) {
+    .split, .body { grid-template-columns: minmax(0, 1fr); }
   }
 </style>

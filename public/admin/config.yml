@@ -10,7 +10,7 @@ locale: nl
 collections:
   - name: projecten
     label: Projecten
-    folder: src/pages/projecten
+    folder: src/content/projecten
     create: true
     delete: true
     slug: "{{slug}}"
@@ -27,20 +27,20 @@ collections:
           - Tabletop
       - { label: Beschrijving, name: description, widget: string }
       - { label: Datum, name: date, widget: datetime, format: YYYY-MM-DD, date_format: DD-MM-YYYY, time_format: false }
-      - { label: Omslagfoto, name: image, widget: image, required: false }
+      - { label: Omslagfoto, name: image, widget: image, required: false, hint: "Wordt vierkant bijgesneden vanuit het midden" }
+      - { label: Extra foto's, name: gallery, widget: list, required: false, field: { label: Foto, name: src, widget: image } }
+      - { label: Machine, name: machine, widget: string, required: false, hint: "Vrije tekst, bijv. Makita RTC 0700 bovenfrees" }
+      - { label: Gebruikte tools, name: tools, widget: relation, collection: tools, search_fields: [name], value_field: slug, display_fields: [name], multiple: true, required: false }
       - { label: Tags, name: tags, widget: list, default: [] }
       - { label: Inhoud, name: body, widget: markdown }
 
   - name: tools
     label: Tools
-    folder: src/pages/tools
+    folder: src/content/tools
     create: true
     delete: true
     slug: "{{slug}}"
     identifier_field: name
-    filter:
-      field: slug
-      pattern: "^(?!index$).*"
     fields:
       - { label: Naam, name: name, widget: string }
       - { label: Slug, name: slug, widget: string, hint: "URL-vriendelijke naam, bijv. bambu-p1s" }
@@ -53,6 +53,7 @@ collections:
           - Houtbewerking
           - Resin
       - { label: Beschrijving, name: description, widget: string }
+      - { label: Volgorde, name: order, widget: number, required: false, value_type: int, hint: "Positie in de stuklijst (T-01, T-02, …)" }
       - { label: Foto, name: image, widget: image, required: false }
       - { label: Tags, name: tags, widget: list, default: [] }
       - { label: Inhoud, name: body, widget: markdown }

@@ -1,100 +1,79 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects, PROJECT_CATEGORIES } from '../../lib/content';
 
-const allProjects = Object.values(import.meta.glob('../../content/projecten/*.md', { eager: true }));
-const sorted = allProjects.sort((a: any, b: any) =>
-  new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
-);
-
-const categories = [...new Set(sorted.map((p: any) => p.frontmatter.category))];
+const projects = await getProjects();
+const categories = PROJECT_CATEGORIES.filter((c) => projects.some((p) => p.data.category === c));
 ---
 
-<Base title="Projecten" description="Alle maker-projecten — 3D printen, CNC, houtbewerking en miniaturen.">
-  <div class="container section">
-    <div class="section-header">
+<Base title="Projecten" description="Alle maker-projecten van Evin — 3D printen, CNC, houtbewerking en miniaturen.">
+  <section class="container head">
+    <div class="kicker">Blad 02 · Onderdelenregister</div>
+    <div class="title-row">
       <h1>Projecten</h1>
-      <span class="section-count">{sorted.length} werken</span>
+      <span class="label count" id="count">{projects.length} onderdelen</span>
     </div>
 
-    <div class="filters">
-      <button class="filter-btn active" data-filter="all">Alle</button>
-      {categories.map((cat: any) => (
-        <button class="filter-btn" data-filter={cat}>{cat}</button>
+    <div class="filters" role="group" aria-label="Filter op categorie">
+      <button type="button" class="filter" data-filter="all" aria-pressed="true">Alle</button>
+      {categories.map((cat) => (
+        <button type="button" class="filter" data-filter={cat} aria-pressed="false">{cat}</button>
       ))}
     </div>
+  </section>
 
-    <div class="projects-grid" id="projects-grid">
-      {sorted.map((project: any) => (
-        <div class="project-item" data-category={project.frontmatter.category}>
-          <ProjectCard
-            title={project.frontmatter.title}
-            category={project.frontmatter.category}
-            description={project.frontmatter.description}
-            slug={project.frontmatter.slug}
-            image={project.frontmatter.image}
-            tags={project.frontmatter.tags}
-          />
-        </div>
-      ))}
+  <section class="container">
+    <div class="tile-grid" id="grid">
+      {projects.map((p) => <ProjectCard project={p} />)}
     </div>
-  </div>
+  </section>
 </Base>
 
 <style>
-  .filters {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    margin-bottom: 3rem;
-  }
-
-  .filter-btn {
+  .head { padding-top: 72px; }
+  .title-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 16px; margin-top: 20px; }
+  .count { font-size: 14px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 36px; padding-bottom: 28px; border-bottom: 1px solid var(--rule); }
+  .filter {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink);
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 6px 16px;
-    background: transparent;
-    border: 1px solid var(--c-border);
-    border-radius: 2px;
-    color: var(--c-muted);
     cursor: pointer;
-    transition: all 0.2s;
   }
-
-  .filter-btn:hover,
-  .filter-btn.active {
-    border-color: var(--c-accent);
-    color: var(--c-accent);
-    background: rgba(200, 169, 110, 0.06);
-  }
-
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
-
-  .project-item.hidden { display: none; }
-
-  @media (max-width: 800px) {
-    .projects-grid { grid-template-columns: 1fr; }
-  }
+  .filter:hover { border-color: var(--mark); color: var(--mark); }
+  .filter[aria-pressed='true'] { background: var(--mark); border-color: var(--mark); color: var(--on-mark); }
+  :global(.card[hidden]) { display: none; }
 </style>
 
 <script>
-  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
-  const items   = document.querySelectorAll<HTMLElement>('.project-item');
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter');
+  const cards = document.querySelectorAll<HTMLElement>('#grid .card');
+  const count = document.getElementById('count');
 
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.dataset.filter;
-      items.forEach(item => {
-        item.classList.toggle('hidden', filter !== 'all' && item.dataset.category !== filter);
-      });
+  function apply(filter: string) {
+    let shown = 0;
+    buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
+    cards.forEach((c) => {
+      const show = filter === 'all' || c.dataset.category === filter;
+      c.hidden = !show;
+      if (show) shown++;
     });
-  });
+    if (count) count.textContent = `${shown} ${shown === 1 ? 'onderdeel' : 'onderdelen'}`;
+    const url = new URL(location.href);
+    if (filter === 'all') url.searchParams.delete('categorie');
+    else url.searchParams.set('categorie', filter);
+    history.replaceState(null, '', url);
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter ?? 'all')));
+
+  const initial = new URLSearchParams(location.search).get('categorie');
+  if (initial && [...buttons].some((b) => b.dataset.filter === initial)) apply(initial);
 </script>

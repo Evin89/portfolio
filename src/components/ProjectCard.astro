@@ -1,91 +1,52 @@
 ---
+import { existingImage, formatShort, type Project } from '../lib/content';
+
 interface Props {
-  title: string;
-  category: string;
-  description: string;
-  slug: string;
-  image?: string;
-  tags?: string[];
+  project: Project;
 }
 
-const { title, category, description, slug, image, tags = [] } = Astro.props;
+const { project } = Astro.props;
+const { title, category, description, date, image } = project.data;
+const src = existingImage(image);
 ---
 
-<a href={`/projecten/${slug}`} class="project-card card">
-  <div class="thumb" style={image ? `background-image: url(${image})` : ''}>
-    {!image && <div class="thumb-placeholder" />}
-    <span class="thumb-label mono">{tags.slice(0, 2).join(' · ')}</span>
+<a href={`/projecten/${project.id}`} class="card" data-category={category}>
+  <div class="frame tile">
+    {src ? <img src={src} alt="" loading="lazy" decoding="async" /> : <div class="tile-empty">Geen foto</div>}
+    <span class="nr">{project.nr}</span>
   </div>
-  <div class="info">
-    <div class="category accent-label">{category}</div>
-    <h3>{title}</h3>
-    <p>{description}</p>
+  <div class="meta mono">
+    <span>{category}</span>
+    <span>{formatShort(date)}</span>
   </div>
+  <h3>{title}</h3>
+  <p>{description}</p>
 </a>
 
 <style>
-  .project-card {
-    display: block;
-    overflow: hidden;
-    text-decoration: none;
-  }
-
-  .thumb {
-    height: 200px;
-    background-color: var(--c-surface);
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
-    padding: 0.75rem;
-  }
-
-  .thumb-placeholder {
+  .card { display: flex; flex-direction: column; width: var(--tile); max-width: 100%; color: var(--ink); }
+  .card:hover h3 { color: var(--mark); }
+  .tile img { transition: filter 0.3s ease; }
+  .card:hover .tile img { filter: brightness(1.08); }
+  .nr {
     position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 20px,
-      rgba(200,169,110,0.03) 20px,
-      rgba(200,169,110,0.03) 40px
-    );
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
   }
-
-  .thumb-label {
-    font-size: 10px;
-    color: var(--c-muted);
-    background: var(--c-bg);
-    padding: 3px 10px;
-    border-radius: 2px;
-    position: relative;
-    z-index: 1;
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--muted);
   }
-
-  .info {
-    padding: 1.25rem;
-  }
-
-  .category {
-    margin-bottom: 0.4rem;
-  }
-
-  h3 {
-    font-size: 1rem;
-    font-weight: 400;
-    margin-bottom: 0.4rem;
-    color: var(--c-text);
-    transition: color 0.2s;
-  }
-
-  .project-card:hover h3 {
-    color: var(--c-accent);
-  }
-
-  p {
-    font-size: 13px;
-    line-height: 1.6;
-  }
+  h3 { margin-top: 10px; font-size: 1.65rem; line-height: 1.1; transition: color 0.2s; }
+  p { margin-top: 10px; font-size: 15px; }
 </style>

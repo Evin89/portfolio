@@ -1,67 +1,117 @@
 ---
 const links = [
   { href: '/projecten', label: 'Projecten' },
-  { href: '/tools',     label: 'Tools' },
-  { href: '/over',      label: 'Over' },
-  { href: '/contact',   label: 'Contact' },
+  { href: '/tools', label: 'Tools' },
+  { href: '/over', label: 'Over' },
+  { href: '/contact', label: 'Contact' },
 ];
 
 const currentPath = Astro.url.pathname;
 ---
 
-<nav>
-  <a href="/" class="logo">Evin.makes</a>
-  <ul>
-    {links.map(link => (
-      <li>
-        <a
-          href={link.href}
-          class:list={['nav-link', { active: currentPath.startsWith(link.href) }]}
-        >
-          {link.label}
-        </a>
-      </li>
-    ))}
-  </ul>
-</nav>
+<header class="site-header">
+  <div class="container bar">
+    <a href="/" class="brand" aria-label="Builder Basement, naar de homepage">
+      <span class="mark" aria-hidden="true">BB</span>
+      <span class="word">Builder Basement</span>
+    </a>
+
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Menu openen">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+        <path d="M3 6h14M3 10h14M3 14h14" />
+      </svg>
+    </button>
+
+    <nav id="site-menu" aria-label="Hoofdmenu">
+      <ul>
+        {links.map((link) => {
+          const active = currentPath.startsWith(link.href);
+          return (
+            <li>
+              <a href={link.href} class:list={['nav-link', { active }]} aria-current={active ? 'page' : undefined}>
+                {link.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  </div>
+</header>
 
 <style>
-  nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 3rem;
-    border-bottom: 1px solid var(--c-border);
+  .site-header {
     position: sticky;
     top: 0;
-    background: var(--c-bg);
     z-index: 100;
+    background: rgba(15, 14, 13, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--rule);
   }
-
-  .logo {
-    font-family: var(--font-display);
-    font-size: 1.4rem;
-    color: var(--c-accent);
-    letter-spacing: 0.02em;
-  }
-
-  ul {
+  .bar {
     display: flex;
-    gap: 2.5rem;
-    list-style: none;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 18px;
+    padding-bottom: 18px;
   }
-
-  .nav-link {
+  .brand { display: flex; align-items: center; gap: 14px; color: var(--ink); }
+  .mark {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--ink);
     font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--c-muted);
-    letter-spacing: 0.1em;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+  }
+  .brand:hover .mark { border-color: var(--mark); color: var(--mark); }
+  .word { font-family: var(--font-display); font-size: 21px; }
+
+  ul { display: flex; flex-wrap: wrap; gap: 4px; list-style: none; }
+  .nav-link {
+    display: block;
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    transition: color 0.2s;
+    color: var(--ink);
+  }
+  .nav-link:hover { color: var(--mark); }
+  .nav-link.active { box-shadow: inset 0 -2px 0 var(--mark); }
+
+  .menu-btn {
+    display: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
   }
 
-  .nav-link:hover,
-  .nav-link.active {
-    color: var(--c-accent);
+  @media (max-width: 700px) {
+    .menu-btn { display: grid; }
+    nav { display: none; width: 100%; }
+    nav.open { display: block; }
+    ul { flex-direction: column; gap: 0; padding: 8px 0 4px; }
+    .nav-link { padding: 14px 0; border-top: 1px solid var(--rule); }
+    .nav-link.active { box-shadow: none; color: var(--mark); }
   }
 </style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.menu-btn');
+  const menu = document.getElementById('site-menu');
+  btn?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('open') ?? false;
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
+  });
+</script>

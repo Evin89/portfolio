@@ -6,6 +6,7 @@ description: "Modulair gothic terrain geprint op de Bambu P1S, gebaseerd op STL 
 date: "2026-08-15"
 tags: ["FDM", "Bambu P1S", "Necromunda", "Terrain", "PrintMinis"]
 image: "/images/d06d286d-9f6c-4f5b-af46-307c89a2993a.jfif"
+tools: ["bambu-p1s"]
 ---
 
 ## Over dit project

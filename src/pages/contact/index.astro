@@ -1,204 +1,136 @@
 ---
 import Base from '../../layouts/Base.astro';
+
+const subreddits = ['r/3Dprinting', 'r/resin', 'r/minipainting', 'r/woodworking', 'r/Necromunda'];
 ---
 
-<Base title="Contact">
-  <div class="container section">
-    <h1 style="margin-bottom:3rem">Neem contact op</h1>
+<Base title="Contact" description="Neem contact op met Evin van Builder Basement.">
+  <div class="container">
+    <header class="head">
+      <div class="kicker">Blad 05 · Contact</div>
+      <h1>Neem contact op</h1>
+    </header>
 
-    <div class="contact-grid">
-
-      <!-- Links -->
+    <div class="grid">
       <div>
-        <div class="label" style="margin-bottom:1.25rem">Sociale media</div>
-        <div class="contact-links">
-          <a href="https://instagram.com/evin.makes" target="_blank" rel="noopener" class="contact-link">
+        <div class="label">Sociale media</div>
+        <div class="links">
+          <a href="https://instagram.com/evin.makes" target="_blank" rel="noopener" class="link">
             <span class="platform mono">Instagram</span>
             <span class="handle">@evin.makes</span>
-            <span class="arrow">↗</span>
+            <span class="arrow" aria-hidden="true">↗</span>
           </a>
-          <a href="https://reddit.com/u/evin_makes" target="_blank" rel="noopener" class="contact-link">
+          <a href="https://reddit.com/u/evin_makes" target="_blank" rel="noopener" class="link">
             <span class="platform mono">Reddit</span>
             <span class="handle">u/evin_makes</span>
-            <span class="arrow">↗</span>
+            <span class="arrow" aria-hidden="true">↗</span>
           </a>
         </div>
 
-        <div class="label" style="margin-top:3rem;margin-bottom:1rem">Subreddits</div>
-        <div class="subreddits">
-          {['r/3Dprinting', 'r/resin', 'r/minipainting', 'r/woodworking', 'r/Necromunda'].map(r => (
-            <span class="chip">{r}</span>
-          ))}
+        <div class="label sub">Subreddits</div>
+        <div class="chips">{subreddits.map((r) => <span class="chip">{r}</span>)}</div>
+      </div>
+
+      <!-- Netlify Forms: Netlify herkent dit formulier bij de build; berichten staan onder Forms in het Netlify-dashboard -->
+      <form id="contact-form" class="form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="contact" />
+        <p class="sr-only"><label>Niet invullen: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+        <div class="field">
+          <label class="label" for="name">Naam</label>
+          <input type="text" id="name" name="name" autocomplete="name" required />
         </div>
-      </div>
-
-      <!-- Contact form -->
-      <div class="form-card">
-        <form id="contact-form" novalidate>
-          <div class="form-field">
-            <label class="label" for="name">Naam</label>
-            <input type="text" id="name" name="name" placeholder="Jouw naam" required />
-          </div>
-          <div class="form-field">
-            <label class="label" for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="jij@voorbeeld.nl" required />
-          </div>
-          <div class="form-field">
-            <label class="label" for="message">Bericht</label>
-            <textarea id="message" name="message" rows="5" placeholder="Vertel me over jouw project..." required></textarea>
-          </div>
-          <button type="submit" class="btn" style="width:100%">Verstuur bericht →</button>
-          <div id="form-status" class="form-status" aria-live="polite"></div>
-        </form>
-      </div>
-
+        <div class="field">
+          <label class="label" for="email">E-mail</label>
+          <input type="email" id="email" name="email" autocomplete="email" required />
+        </div>
+        <div class="field">
+          <label class="label" for="message">Bericht</label>
+          <textarea id="message" name="message" rows="6" required></textarea>
+        </div>
+        <button type="submit" class="btn">Verstuur bericht →</button>
+        <p id="form-status" class="status" role="status" aria-live="polite"></p>
+      </form>
     </div>
   </div>
 </Base>
 
 <style>
-  .contact-grid {
+  .head { padding-top: 72px; }
+  h1 { margin-top: 20px; }
+  .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 72px;
     align-items: start;
+    margin-top: 56px;
   }
-
-  /* Links */
-  .contact-links {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .contact-link {
-    display: flex;
+  .links { display: flex; flex-direction: column; margin-top: 14px; border-top: 1px solid var(--rule); }
+  .link {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr) auto;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-radius: 4px;
-    text-decoration: none;
-    transition: border-color 0.2s;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
   }
+  .platform { font-size: 12px; color: var(--muted); }
+  .handle { font-size: 18px; }
+  .link:hover .handle, .link:hover .arrow { color: var(--mark); }
+  .sub { margin-top: 48px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 
-  .contact-link:hover { border-color: var(--c-accent); }
-
-  .platform {
-    font-size: 12px;
-    color: var(--c-accent);
-    width: 90px;
-    flex-shrink: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-
-  .handle {
-    font-size: 13px;
-    color: var(--c-muted);
-    flex: 1;
-  }
-
-  .arrow {
-    color: var(--c-muted);
-    font-size: 12px;
-    transition: color 0.2s;
-  }
-
-  .contact-link:hover .arrow { color: var(--c-accent); }
-
-  .subreddits {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .chip {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--c-muted);
-    border: 1px solid var(--c-border);
-    padding: 4px 10px;
-    border-radius: 2px;
-  }
-
-  /* Form */
-  .form-card {
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-radius: 4px;
-    padding: 2rem;
-  }
-
-  .form-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-  }
-
+  .form { border: 2px solid var(--ink); background: var(--panel); padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+  .field { display: flex; flex-direction: column; gap: 8px; }
   input, textarea {
-    background: var(--c-bg);
-    border: 1px solid var(--c-border);
-    border-radius: 2px;
-    padding: 0.7rem 1rem;
-    color: var(--c-text);
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 300;
-    outline: none;
-    transition: border-color 0.2s;
-    resize: vertical;
     width: 100%;
+    padding: 12px 14px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    color: var(--ink);
+    font: inherit;
+    font-size: 16px;
   }
+  input:focus, textarea:focus { outline: none; border-color: var(--mark); }
+  textarea { resize: vertical; }
+  .status { min-height: 1.5em; font-family: var(--font-mono); font-size: 13px; }
+  .status.ok { color: var(--mark-2); }
+  .status.err { color: #e8907a; }
 
-  input:focus, textarea:focus { border-color: var(--c-accent); }
-  input::placeholder, textarea::placeholder { color: var(--c-muted); }
-
-  .form-status {
-    margin-top: 1rem;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    text-align: center;
-  }
-
-  .form-status.success { color: var(--c-accent2); }
-  .form-status.error   { color: #e05a5a; }
-
-  @media (max-width: 800px) {
-    .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: minmax(0, 1fr); gap: 56px; }
+    .form { padding: 20px; }
   }
 </style>
 
 <script>
-  // Simpele client-side validatie
-  // Voor echte email: gebruik Netlify Forms, Formspree, of een eigen API endpoint
-  const form = document.getElementById('contact-form') as HTMLFormElement;
-  const status = document.getElementById('form-status')!;
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const status = document.getElementById('form-status');
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    if (!status) return;
+    const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Versturen…'; }
+    status.className = 'status';
+    status.textContent = '';
 
-    btn.textContent = 'Versturen...';
-    btn.disabled = true;
-
-    // TODO: koppel aan Netlify Forms, Formspree (https://formspree.io) of eigen endpoint
-    // Voorbeeld voor Formspree:
-    // const res = await fetch('https://formspree.io/f/JOUW_FORM_ID', {
-    //   method: 'POST',
-    //   body: new FormData(form),
-    //   headers: { Accept: 'application/json' }
-    // });
-
-    // Simulatie voor nu
-    await new Promise(r => setTimeout(r, 800));
-
-    status.textContent = 'Bericht ontvangen! Ik reageer zo snel mogelijk.';
-    status.className = 'form-status success';
-    form.reset();
-    btn.textContent = 'Verstuur bericht →';
-    btn.disabled = false;
+    try {
+      const body = new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString();
+      const res = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body,
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      status.className = 'status ok';
+      status.textContent = 'Bericht ontvangen! Ik reageer zo snel mogelijk.';
+      form.reset();
+    } catch {
+      status.className = 'status err';
+      status.textContent = 'Versturen is niet gelukt. Probeer het later opnieuw of stuur een bericht via Instagram.';
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Verstuur bericht →'; }
+    }
   });
 </script>

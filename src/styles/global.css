@@ -1,135 +1,333 @@
-/* ── Design tokens ── */
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500&display=swap');
+/* ── Fonts (self-hosted via @fontsource, geen Google Fonts-request) ── */
+@import '@fontsource/dm-serif-display/400.css';
+@import '@fontsource/dm-serif-display/400-italic.css';
+@import '@fontsource/outfit/300.css';
+@import '@fontsource/outfit/400.css';
+@import '@fontsource/outfit/500.css';
+@import '@fontsource/outfit/600.css';
+@import '@fontsource/dm-mono/400.css';
+@import '@fontsource/dm-mono/500.css';
 
+/* ── Design tokens — "Kelder" (spec §9) ── */
 :root {
-  --c-bg:       #0f0e0d;
-  --c-surface:  #1a1917;
-  --c-border:   #2e2c29;
-  --c-text:     #e8e4de;
-  --c-muted:    #7a7670;
-  --c-accent:   #c8a96e;
-  --c-accent2:  #7eb8a4;
+  --paper:  #0f0e0d;
+  --panel:  #1a1917;
+  --ink:    #e8e4de;
+  --muted:  #a19c94;
+  --rule:   #3a3733;
+  --mark:   #c8a96e;
+  --mark-2: #7eb8a4;
+  --on-mark: #14130f;
 
-  --font-display: 'DM Serif Display', serif;
-  --font-body:    'Outfit', sans-serif;
-  --font-mono:    'DM Mono', monospace;
+  /* Centimeterraster */
+  --grid: rgba(255, 255, 255, 0.035);
+  --cm:   rgba(255, 255, 255, 0.17);
+
+  /* Tegels */
+  --tile:   9cm;
+  --tile-l: 17cm;
+  --thumb:  2.5cm;
+
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body:    'Outfit', system-ui, sans-serif;
+  --font-mono:    'DM Mono', ui-monospace, monospace;
+
+  --max: 1200px;
+  --gutter: 32px;
 }
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
-  background: var(--c-bg);
-  color: var(--c-text);
-  font-family: var(--font-body);
-  font-weight: 300;
-  line-height: 1.7;
+  position: relative;
   min-height: 100vh;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 1cm 1cm;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ── Typography ── */
+/* Hier en daar licht het centimeterraster op en vervaagt het weer */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(var(--cm) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cm) 1px, transparent 1px);
+  background-size: 1cm 1cm;
+  --spots:
+    radial-gradient(ellipse 560px 460px at 96% 260px, #000 0%, transparent 72%),
+    radial-gradient(ellipse 420px 380px at 3% 860px, #000 0%, transparent 72%),
+    radial-gradient(ellipse 720px 280px at 40% 1520px, #000 0%, transparent 72%),
+    radial-gradient(ellipse 480px 440px at 97% 2000px, #000 0%, transparent 72%),
+    radial-gradient(ellipse 520px 320px at 10% 2700px, #000 0%, transparent 72%);
+  -webkit-mask-image: var(--spots);
+  mask-image: var(--spots);
+}
+body > * { position: relative; z-index: 1; }
+
+@media (max-width: 700px) {
+  body::before {
+    --spots:
+      radial-gradient(ellipse 260px 220px at 100% 120px, #000 0%, transparent 72%),
+      radial-gradient(ellipse 220px 260px at 0% 760px, #000 0%, transparent 72%),
+      radial-gradient(ellipse 280px 200px at 92% 1300px, #000 0%, transparent 72%),
+      radial-gradient(ellipse 240px 220px at 8% 1900px, #000 0%, transparent 72%);
+  }
+}
+
+/* ── Typografie ── */
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 400;
-  line-height: 1.15;
-  color: var(--c-text);
+  line-height: 1.05;
+  color: var(--ink);
 }
-h1 { font-size: clamp(2.5rem, 5vw, 3.8rem); }
-h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); }
-h3 { font-size: 1.25rem; }
+h1 { font-size: clamp(3rem, 7vw, 5.2rem); }
+h2 { font-size: clamp(2rem, 3.6vw, 2.6rem); }
+h3 { font-size: 1.6rem; }
 
-p { color: var(--c-muted); line-height: 1.85; }
-
-em { font-style: italic; color: var(--c-accent); }
-
+p { color: var(--muted); }
+em { font-style: italic; color: var(--mark); }
 a { color: inherit; text-decoration: none; }
+a:hover { color: var(--mark); }
+img { display: block; max-width: 100%; }
 
-/* ── Utility ── */
-.mono {
-  font-family: var(--font-mono);
-  letter-spacing: 0.06em;
-}
-
-.label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--c-muted);
-}
-
-.accent-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--c-accent2);
-}
-
-/* ── Buttons ── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0.8rem 1.75rem;
-  background: var(--c-accent);
-  color: #0f0e0d;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: opacity 0.2s;
-}
-.btn:hover { opacity: 0.85; }
-
-.btn-ghost {
-  background: transparent;
-  color: var(--c-accent);
-  border: 1px solid var(--c-border);
-}
-.btn-ghost:hover { border-color: var(--c-accent); }
-
-/* ── Cards ── */
-.card {
-  background: var(--c-surface);
-  border: 1px solid var(--c-border);
-  border-radius: 4px;
-  transition: border-color 0.2s;
-}
-.card:hover { border-color: var(--c-accent); }
+:focus-visible { outline: 2px solid var(--mark); outline-offset: 3px; }
 
 /* ── Layout ── */
 .container {
-  max-width: 1100px;
+  max-width: var(--max);
   margin: 0 auto;
-  padding: 0 3rem;
+  padding: 0 var(--gutter);
 }
+@media (max-width: 700px) { :root { --gutter: 20px; } }
 
-.section {
-  padding: 5rem 0;
-}
+.section { padding-top: 112px; }
+@media (max-width: 700px) { .section { padding-top: 64px; } }
 
-/* ── Section header ── */
-.section-header {
+.section-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
 }
-.section-count {
+
+/* ── Labels in mono ── */
+.label, .mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.label { font-size: 12px; color: var(--muted); }
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.kicker::before {
+  content: "";
+  width: 32px;
+  height: 2px;
+  background: var(--mark);
+}
+
+/* ── Knoppen ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 26px;
+  background: var(--mark);
+  color: var(--on-mark);
+  border: 1px solid var(--mark);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.btn:hover { background: transparent; color: var(--mark); }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
+.btn-ghost:hover { border-color: var(--mark); }
+
+.chip {
+  display: inline-block;
+  padding: 2px 9px;
+  border: 1px solid var(--rule);
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--c-muted);
+  color: var(--ink);
 }
 
-/* ── Divider ── */
-hr {
-  border: none;
-  border-top: 1px solid var(--c-border);
+/* ── Hoekmarkeringen om foto's ── */
+.frame { position: relative; }
+.frame::before, .frame::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--mark);
+  border-style: solid;
+  pointer-events: none;
+  z-index: 2;
+}
+.frame::before { top: -7px; left: -7px; border-width: 2px 0 0 2px; }
+.frame::after  { bottom: -7px; right: -7px; border-width: 0 2px 2px 0; }
+
+/* ── Vaste tegels (spec §9.3) ── */
+.tile, .tile-l, .thumb {
+  flex: none;
+  max-width: 100%;
+  background: var(--panel);
+}
+.tile   { width: var(--tile);   height: var(--tile); }
+.tile-l { width: var(--tile-l); height: var(--tile-l); }
+.thumb  { width: var(--thumb);  height: var(--thumb); }
+.tile img, .tile-l img, .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.tile-empty {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background-image:
+    linear-gradient(45deg, transparent 49.5%, var(--rule) 49.5%, var(--rule) 50.5%, transparent 50.5%),
+    linear-gradient(-45deg, transparent 49.5%, var(--rule) 49.5%, var(--rule) 50.5%, transparent 50.5%);
+}
+
+/* Op smalle schermen blijven grote tegels vierkant maar passen ze in de breedte */
+@media (max-width: 900px) {
+  .tile-l { width: 100%; height: auto; aspect-ratio: 1 / 1; }
+}
+@media (max-width: 420px) {
+  .tile { width: 100%; height: auto; aspect-ratio: 1 / 1; }
+}
+
+/* Raster van projecttegels: 3 per rij, vaste maat */
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, var(--tile));
+  justify-content: space-between;
+  row-gap: 1.5cm;
+  margin-top: 56px;
+}
+@media (max-width: 1220px) {
+  .tile-grid { grid-template-columns: repeat(2, var(--tile)); justify-content: space-evenly; }
+}
+@media (max-width: 800px) {
+  .tile-grid { grid-template-columns: minmax(0, var(--tile)); justify-content: center; }
+}
+
+/* ── Stuklijst-tabel ── */
+.bom-wrap { overflow-x: auto; border: 1px solid var(--rule); }
+.bom {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.bom th {
+  padding: 14px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+}
+.bom td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--muted);
+  vertical-align: top;
+}
+.bom tr:last-child td { border-bottom: 0; }
+.bom .pos { font-family: var(--font-mono); color: var(--mark); width: 80px; }
+.bom .name { color: var(--ink); font-weight: 500; }
+@media (max-width: 700px) {
+  .bom { min-width: 0; }
+  .bom .desc { display: none; }
+  .bom th, .bom td { padding: 14px 12px; }
+  .bom .pos { width: 56px; }
+}
+
+/* ── Markdown-inhoud ── */
+.prose { max-width: 680px; }
+.prose > * + * { margin-top: 1.1em; }
+.prose h2 {
+  margin-top: 2.2em;
+  font-size: 2rem;
+  counter-increment: section;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+.prose h2::before {
+  content: counter(section, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--mark);
+}
+.prose h2:first-child { margin-top: 0; }
+.prose h3 { margin-top: 1.8em; }
+.prose p, .prose li { color: #cfcac2; }
+.prose ul, .prose ol { padding-left: 1.2em; }
+.prose li + li { margin-top: 0.35em; }
+.prose li::marker { color: var(--mark); }
+.prose strong { color: var(--ink); font-weight: 600; }
+.prose a { color: var(--mark); text-decoration: underline; text-underline-offset: 3px; }
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 1px 5px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+}
+.prose img { margin: 1.5em 0; }
+.prose { counter-reset: section; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

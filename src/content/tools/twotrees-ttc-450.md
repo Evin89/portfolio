@@ -5,6 +5,7 @@ category: "CNC"
 description: "CNC router voor hout, MDF en zacht metaal — voor patronen, inlays en vlakfrezen."
 tags: ["CNC", "Router", "Hout", "MDF"]
 image: "/images/tools/ttc-450.jpg"
+order: 3
 ---
 
 ## Over deze machine

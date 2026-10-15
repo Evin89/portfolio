@@ -1,0 +1,73 @@
+---
+/** Stempelveld: de cartouche van een technische tekening, rechts naast de hoofdfoto. */
+interface Row {
+  label: string;
+  value?: string;
+  href?: string;
+  accent?: boolean;
+}
+
+interface Props {
+  rows: Row[];
+  tags?: string[];
+  links?: { label: string; href: string }[];
+  linksLabel?: string;
+}
+
+const { rows, tags = [], links = [], linksLabel = 'Gebruikte tools' } = Astro.props;
+const filled = rows.filter((r) => r.value);
+---
+
+<aside class="stamp" aria-label="Stempelveld">
+  <div class="head">
+    <span class="title">Stempelveld</span>
+    <span class="label">Blad 1/1</span>
+  </div>
+  <dl>
+    {filled.map((r) => (
+      <>
+        <dt class="label">{r.label}</dt>
+        <dd class:list={{ accent: r.accent }}>{r.href ? <a href={r.href}>{r.value}</a> : r.value}</dd>
+      </>
+    ))}
+    {tags.length > 0 && (
+      <>
+        <dt class="label">Tags</dt>
+        <dd class="tags">{tags.map((t) => <span class="chip">{t}</span>)}</dd>
+      </>
+    )}
+  </dl>
+  {links.length > 0 && (
+    <div class="foot">
+      <div class="label">{linksLabel}</div>
+      <ul>
+        {links.map((l) => (
+          <li><a href={l.href}>{l.label} →</a></li>
+        ))}
+      </ul>
+    </div>
+  )}
+</aside>
+
+<style>
+  .stamp { border: 2px solid var(--ink); background: var(--panel); align-self: start; }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .title { font-family: var(--font-display); font-size: 22px; }
+  dl { display: grid; grid-template-columns: 112px minmax(0, 1fr); font-size: 15px; }
+  dt, dd { padding: 13px 20px; border-bottom: 1px solid var(--rule); }
+  dt { font-size: 11px; letter-spacing: 0.12em; padding-top: 16px; }
+  dd.accent { font-family: var(--font-mono); color: var(--mark); }
+  dl > :nth-last-child(-n + 2) { border-bottom: 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .foot { border-top: 2px solid var(--ink); padding: 16px 20px; }
+  .foot ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; }
+  .foot a { color: var(--ink); }
+  .foot a:hover { color: var(--mark); }
+</style>

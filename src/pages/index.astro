@@ -1,164 +1,115 @@
 ---
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import ToolTable from '../components/ToolTable.astro';
+import Figure from '../components/Figure.astro';
+import { getProjects, getTools, existingImage, PROJECT_CATEGORIES } from '../lib/content';
 
-// Haal de laatste 3 projecten op
-const allProjects = Object.values(import.meta.glob('../content/projecten/*.md', { eager: true }));
-const recentProjects = allProjects
-  .sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime())
-  .slice(0, 3);
+const projects = await getProjects();
+const tools = await getTools();
+const recent = projects.slice(0, 3);
+const featured = projects.find((p) => existingImage(p.data.image));
+const counts = PROJECT_CATEGORIES.map((cat) => ({
+  cat,
+  n: projects.filter((p) => p.data.category === cat).length,
+}));
 ---
 
-<Base title="Home">
-
-  <!-- ── Hero ── -->
-  <section class="hero container">
+<Base title="Home" image={featured?.data.image}>
+  <section class="container hero">
     <div class="hero-text">
-      <div class="accent-label" style="margin-bottom:1.5rem">Maker uit Nederland</div>
-      <h1>Ik maak dingen<br>die er <em>toe doen</em></h1>
-      <p>
-        3D printen, CNC-frezen, houtbewerking en miniaturen —
-        van digitaal ontwerp tot tastbaar object.
+      <div class="kicker">Blad 01 · Maker uit Rotterdam</div>
+      <h1>Ik maak dingen<br />die er <em>toe doen</em></h1>
+      <p class="lead">
+        3D printen, CNC-frezen, houtbewerking en miniaturen — van digitaal ontwerp tot tastbaar object.
       </p>
-      <div class="hero-cta">
-        <a href="/projecten" class="btn">Bekijk projecten</a>
+      <div class="cta">
+        <a href="/projecten" class="btn">Bekijk projecten →</a>
         <a href="/over" class="btn btn-ghost">Over mij</a>
       </div>
     </div>
 
-    <div class="hero-stats">
-      <div class="stat-card">
-        <div class="label">Machine park</div>
-        <ul class="machine-list mono">
-          <li>Bambu Lab P1S</li>
-          <li>Elegoo Mars 3 Pro</li>
-          <li>TwoTrees TTC 450</li>
-          <li>Tafelzaag + Bandzaag</li>
-        </ul>
-      </div>
-      <div class="stat-card">
-        <div class="label">Materialen</div>
-        <div class="materials">
-          {['PLA', 'PETG', 'ABS', 'Resin', 'Hout', 'Epoxy', 'MDF'].map(m => (
-            <span class="chip">{m}</span>
-          ))}
-        </div>
-      </div>
-    </div>
+    {featured && (
+      <a href={`/projecten/${featured.id}`} class="hero-fig">
+        <Figure
+          src={existingImage(featured.data.image)}
+          alt={featured.data.title}
+          caption={`Fig. 1 — ${featured.nr} ${featured.data.title}`}
+          size="tile"
+          dimensions={featured.data.dimensions}
+          eager
+        />
+      </a>
+    )}
   </section>
 
-  <hr />
-
-  <!-- ── Recente projecten ── -->
-  <section class="container section">
-    <div class="section-header">
-      <h2>Recente projecten</h2>
-      <span class="section-count">{allProjects.length} projecten totaal</span>
-    </div>
-
-    <div class="projects-grid">
-      {recentProjects.map(project => (
-        <ProjectCard
-          title={project.frontmatter.title}
-          category={project.frontmatter.category}
-          description={project.frontmatter.description}
-          slug={project.frontmatter.slug}
-          image={project.frontmatter.image}
-          tags={project.frontmatter.tags}
-        />
+  <section class="container" aria-label="Werkgebieden">
+    <div class="legend">
+      <div class="cell">
+        <div class="label">Legenda</div>
+        <div class="name">Werkgebieden</div>
+      </div>
+      {counts.map(({ cat, n }, i) => (
+        <a class="cell" href={`/projecten?categorie=${encodeURIComponent(cat)}`}>
+          <div class="label">{String(i + 1).padStart(2, '0')} — {n} {n === 1 ? 'project' : 'projecten'}</div>
+          <div class="name">{cat}</div>
+        </a>
       ))}
     </div>
+  </section>
 
-    <div class="view-all">
-      <a href="/projecten" class="btn btn-ghost">Alle projecten bekijken →</a>
+  <section class="container section">
+    <div class="section-head">
+      <h2>Recente onderdelen</h2>
+      <a href="/projecten" class="mono more">Alle {projects.length} projecten →</a>
+    </div>
+    <div class="tile-grid">
+      {recent.map((p) => <ProjectCard project={p} />)}
     </div>
   </section>
 
+  <section class="container section">
+    <div class="section-head bare">
+      <h2>Stuklijst</h2>
+      <span class="label">Machines in de werkplaats</span>
+    </div>
+    <ToolTable tools={tools} />
+  </section>
 </Base>
 
 <style>
-  /* ── Hero ── */
   .hero {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 72px;
     align-items: center;
-    padding-top: 6rem;
-    padding-bottom: 5rem;
+    padding-top: 88px;
+    padding-bottom: 96px;
   }
+  h1 { margin-top: 28px; font-size: clamp(3.2rem, 7.5vw, 5.6rem); line-height: 0.98; }
+  .lead { max-width: 520px; margin-top: 28px; font-size: 19px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 40px; }
+  .hero-fig { display: block; color: inherit; }
 
-  .hero-text h1 { margin-bottom: 1.5rem; }
-  .hero-text p  { margin-bottom: 2.5rem; max-width: 420px; font-size: 1rem; }
-
-  .hero-cta {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .hero-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  .stat-card {
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-radius: 4px;
-    padding: 1.5rem;
-  }
-
-  .stat-card .label {
-    margin-bottom: 1rem;
-  }
-
-  .machine-list {
-    list-style: none;
-    font-size: 13px;
-    color: var(--c-muted);
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .machine-list li::before {
-    content: '→ ';
-    color: var(--c-accent);
-  }
-
-  .materials {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.25rem;
-  }
-
-  .chip {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--c-text);
-    background: var(--c-bg);
-    border: 1px solid var(--c-border);
-    padding: 3px 10px;
-    border-radius: 2px;
-  }
-
-  /* ── Projects grid ── */
-  .projects-grid {
+  .legend {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border: 1px solid var(--rule);
+    background: var(--panel);
   }
+  .legend .cell { display: block; padding: 22px 24px; border-right: 1px solid var(--rule); color: var(--ink); }
+  .legend .cell:last-child { border-right: 0; }
+  .legend a.cell:hover .name { color: var(--mark); }
+  .legend .label { text-transform: none; letter-spacing: 0.06em; }
+  .legend .name { margin-top: 6px; font-family: var(--font-display); font-size: 21px; line-height: 1.2; }
 
-  .view-all {
-    margin-top: 3rem;
-    text-align: center;
-  }
+  .section-head.bare { border-bottom: 0; }
+  .more { font-size: 14px; padding: 12px 0; }
 
-  /* ── Responsive ── */
-  @media (max-width: 800px) {
-    .hero { grid-template-columns: 1fr; gap: 3rem; }
-    .projects-grid { grid-template-columns: 1fr; }
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: minmax(0, 1fr); gap: 48px; padding-top: 48px; padding-bottom: 64px; }
+    .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .legend .cell:nth-child(2) { border-right: 0; }
+    .legend .cell:nth-child(-n + 2) { border-bottom: 1px solid var(--rule); }
   }
 </style>

@@ -1,0 +1,62 @@
+---
+/**
+ * Foto in een vaste tegel met goudkleurige hoekmarkeringen, een figuurbijschrift
+ * en (optioneel) maatlijnen langs de onder- en rechterrand.
+ */
+interface Props {
+  src?: string;
+  alt: string;
+  caption?: string;
+  size?: 'tile' | 'tile-l';
+  dimensions?: { width: number; depth: number; height?: number };
+  eager?: boolean;
+}
+
+const { src, alt, caption, size = 'tile-l', dimensions, eager = false } = Astro.props;
+---
+
+<figure class:list={['fig', { 'has-dims': dimensions }]}>
+  {caption && <figcaption class="label">{caption}</figcaption>}
+  <div class:list={['frame', size]}>
+    {src ? (
+      <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" fetchpriority={eager ? 'high' : 'auto'} />
+    ) : (
+      <div class="tile-empty">Geen foto</div>
+    )}
+  </div>
+  {dimensions && (
+    <>
+      <div class="dim dim-h" aria-hidden="true">
+        <span class="end" /><span class="line" /><span class="val">{dimensions.width} mm</span><span class="line" /><span class="end" />
+      </div>
+      <div class="dim dim-v" aria-hidden="true">
+        <span class="end" /><span class="line" /><span class="val">{dimensions.depth} mm</span><span class="line" /><span class="end" />
+      </div>
+      <p class="sr-only">Afmetingen: {dimensions.width} bij {dimensions.depth} mm{dimensions.height ? `, hoogte ${dimensions.height} mm` : ''}.</p>
+    </>
+  )}
+</figure>
+
+<style>
+  .fig { position: relative; width: fit-content; max-width: 100%; padding-top: 30px; }
+  .fig.has-dims { padding-right: 44px; padding-bottom: 52px; }
+  figcaption { position: absolute; top: 0; left: 0; right: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+  .dim { position: absolute; display: flex; align-items: center; gap: 12px; color: var(--muted); }
+  .dim .val { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; white-space: nowrap; }
+  .dim .line { flex: 1; background: var(--muted); }
+  .dim-h { left: 0; right: 44px; bottom: 14px; }
+  .dim-h .line { height: 1px; }
+  .dim-h .end { width: 1px; height: 16px; background: var(--muted); }
+  .dim-v { top: 30px; bottom: 52px; right: 10px; flex-direction: column; }
+  .dim-v .line { width: 1px; }
+  .dim-v .end { height: 1px; width: 16px; background: var(--muted); }
+  .dim-v .val { writing-mode: vertical-rl; }
+
+  @media (max-width: 900px) {
+    .fig { width: 100%; }
+    .fig.has-dims { padding-right: 0; }
+    .dim-v { display: none; }
+    .dim-h { right: 0; }
+  }
+</style>

@@ -1,0 +1,33 @@
+---
+import type { Tool } from '../lib/content';
+
+interface Props {
+  tools: Tool[];
+}
+
+const { tools } = Astro.props;
+---
+
+<div class="bom-wrap">
+  <table class="bom">
+    <caption class="sr-only">Stuklijst: machines in de werkplaats</caption>
+    <thead>
+      <tr>
+        <th scope="col">Pos.</th>
+        <th scope="col">Machine</th>
+        <th scope="col">Categorie</th>
+        <th scope="col" class="desc">Omschrijving</th>
+      </tr>
+    </thead>
+    <tbody>
+      {tools.map((tool) => (
+        <tr>
+          <td class="pos">{tool.pos}</td>
+          <td class="name"><a href={`/tools/${tool.id}`}>{tool.data.name}</a></td>
+          <td>{tool.data.category}</td>
+          <td class="desc">{tool.data.description}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

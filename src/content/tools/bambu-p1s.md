@@ -5,6 +5,7 @@ category: "3D Printen"
 description: "Enclosed FDM printer met multi-material unit, voor PLA, PETG, ABS en meer."
 tags: ["FDM", "Multi-Material", "Enclosed"]
 image: "/images/bambup1s.jfif"
+order: 1
 ---
 
 ## Over deze machine

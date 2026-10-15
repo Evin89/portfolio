@@ -1,125 +1,71 @@
 ---
+import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Figure from '../../components/Figure.astro';
+import TitleBlock from '../../components/TitleBlock.astro';
+import { getTools, getProjects, existingImage, type Tool } from '../../lib/content';
 
 export async function getStaticPaths() {
-  const tools = Object.values(import.meta.glob('../../content/tools/*.md', { eager: true }));
-  return tools.map((tool: any) => ({
-    params: { slug: tool.frontmatter.slug },
-    props: { tool },
-  }));
+  const tools = await getTools();
+  return tools.map((tool) => ({ params: { slug: tool.id }, props: { tool } }));
+}
+
+interface Props {
+  tool: Tool;
 }
 
 const { tool } = Astro.props;
-const { name, category, description, image, tags } = tool.frontmatter;
-const Content = tool.Content;
+const { name, category, description, tags, image } = tool.data;
+const { Content } = await render(tool);
+const usedIn = (await getProjects()).filter((p) => p.data.tools.some((t) => t.id === tool.id));
+const src = existingImage(image);
 ---
 
-<Base title={name} description={description}>
+<Base title={name} description={description} image={src}>
   <div class="container">
+    <nav class="crumbs mono" aria-label="Kruimelpad">
+      <a href="/tools">Tools</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{tool.pos}</span>
+    </nav>
 
-    <header class="tool-header">
-      <a href="/tools" class="back-link mono">← Alle tools</a>
-      <div class="accent-label" style="margin: 1.5rem 0 0.5rem">{category}</div>
+    <header class="intro">
+      <div class="nr mono">Positie {tool.pos}</div>
       <h1>{name}</h1>
-      <div class="tags">
-        {tags?.map((tag: string) => <span class="tag">{tag}</span>)}
-      </div>
+      <p class="lead">{description}</p>
     </header>
 
-    {image && (
-      <div class="hero-image">
-        <img src={image} alt={name} />
-      </div>
-    )}
+    <section class="split">
+      <Figure src={src} alt={name} caption="Fig. 1 — Machine" size="tile" eager />
+      <TitleBlock
+        rows={[
+          { label: 'Positie', value: tool.pos, accent: true },
+          { label: 'Categorie', value: category },
+        ]}
+        tags={tags}
+        links={usedIn.map((p) => ({ label: `${p.nr} ${p.data.title}`, href: `/projecten/${p.id}` }))}
+        linksLabel="Gebruikt in"
+      />
+    </section>
 
-    <div class="tool-body">
+    <article class="prose body">
       <Content />
-    </div>
+    </article>
 
+    <a href="/tools" class="back mono">← Terug naar de stuklijst</a>
   </div>
 </Base>
 
 <style>
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 3rem;
-  }
-
-  .back-link {
-    font-size: 12px;
-    color: var(--c-muted);
-    text-decoration: none;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-  }
-  .back-link:hover { color: var(--c-accent); }
-
-  .tool-header {
-    padding: 3rem 0 2rem;
-    border-bottom: 1px solid var(--c-border);
-    margin-bottom: 2.5rem;
-  }
-
-  h1 { margin-bottom: 1.25rem; }
-
-  .tags {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--c-accent);
-    background: rgba(200, 169, 110, 0.1);
-    padding: 3px 10px;
-    border-radius: 2px;
-  }
-
-  .hero-image {
-    margin-bottom: 3rem;
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid var(--c-border);
-  }
-
-  .hero-image img {
-    width: 100%;
-    height: auto;
-    max-height: 500px;
-    object-fit: cover;
-    display: block;
-  }
-
-  .tool-body {
-    color: var(--c-muted);
-    line-height: 1.85;
-    font-size: 1rem;
-  }
-
-  .tool-body :global(h2) {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    color: var(--c-text);
-    margin: 2.5rem 0 1rem;
-  }
-
-  .tool-body :global(p) { margin-bottom: 1.25rem; }
-
-  .tool-body :global(ul) {
-    padding-left: 1.5rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .tool-body :global(li) { margin-bottom: 0.4rem; }
-
-  .tool-body :global(li::marker) { color: var(--c-accent); }
-
-  .tool-body :global(strong) {
-    color: var(--c-text);
-    font-weight: 500;
-  }
+  .crumbs { padding-top: 28px; font-size: 13px; color: var(--muted); display: flex; gap: 8px; }
+  .crumbs a { color: var(--muted); }
+  .crumbs [aria-current] { color: var(--ink); }
+  .intro { padding: 40px 0 48px; }
+  .nr { font-size: 13px; letter-spacing: 0.14em; color: var(--mark); }
+  h1 { margin-top: 14px; font-size: clamp(3rem, 7vw, 5rem); line-height: 0.95; }
+  .lead { max-width: 640px; margin-top: 22px; font-size: 20px; }
+  .split { display: grid; grid-template-columns: auto minmax(280px, 420px); gap: 56px; align-items: start; }
+  .body { padding-top: 88px; }
+  .back { display: inline-block; margin-top: 88px; font-size: 13px; padding: 12px 0; }
+  @media (max-width: 900px) { .split { grid-template-columns: minmax(0, 1fr); } }
 </style>

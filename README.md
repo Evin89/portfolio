@@ -1,100 +1,73 @@
-# Evin.makes — Portfolio
+# Builder Basement
 
-Persoonlijke maker portfolio gebouwd met [Astro](https://astro.build).
+Maker-portfolio van Evin Wijninga op [builderbasement.com](https://builderbasement.com): 3D printen, CNC, houtbewerking en miniaturen.
 
 ## Tech stack
 
-- **Framework**: Astro 4.x (statisch, geen JS tenzij nodig)
-- **Styling**: Pure CSS met custom properties, geen framework
-- **Fonts**: DM Serif Display + DM Mono + Outfit (Google Fonts)
-- **Hosting**: Netlify of Vercel (gratis tier voldoende)
+- **Framework:** Astro 6, statisch (`output: static`)
+- **Content:** Astro content collections (markdown + frontmatter, gevalideerd met een schema)
+- **Styling:** pure CSS met custom properties in `src/styles/global.css`, design "Kelder"
+- **Fonts:** DM Serif Display, Outfit en DM Mono, self-hosted via `@fontsource`
+- **CMS:** Decap CMS op `/admin` met Netlify Identity (wordt later vervangen door een eigen admin op Supabase)
+- **Hosting:** Netlify, bouwt automatisch bij elke push naar `main`
 
 ## Snel starten
 
 ```bash
-# 1. Installeer dependencies
 npm install
-
-# 2. Start dev server
-npm run dev
-# → http://localhost:4321
-
-# 3. Build voor productie
-npm run build
-
-# 4. Preview de build
-npm run preview
+npm run dev       # http://localhost:4321
+npm run build     # bouwt naar dist/
+npm run preview   # bekijk de build
 ```
 
 ## Projectstructuur
 
 ```
 src/
-├── components/
-│   ├── Nav.astro          ← Navigatiebalk
-│   ├── Footer.astro       ← Footer
-│   └── ProjectCard.astro  ← Projectkaart component
-├── layouts/
-│   └── Base.astro         ← HTML boilerplate + nav + footer
-├── pages/
-│   ├── index.astro        ← Homepage
-│   ├── projecten/
-│   │   ├── index.astro    ← Projectenoverzicht (met filter)
-│   │   └── *.md           ← Elk project = één markdown bestand
-│   ├── over/
-│   │   └── index.astro    ← Over-mij pagina
-│   └── contact/
-│       └── index.astro    ← Contactpagina
-└── styles/
-    └── global.css         ← Design tokens + utility classes
+├── content.config.ts      ← schema's voor projecten en tools
+├── content/
+│   ├── projecten/*.md     ← één bestand per project
+│   └── tools/*.md         ← één bestand per machine
+├── lib/content.ts         ← ophalen, sorteren, onderdeelnummers (BB-001…) en posities (T-01…)
+├── components/            ← Nav, Footer (titelblok), ProjectCard, Figure, TitleBlock (stempelveld), ToolTable
+├── layouts/Base.astro
+├── pages/                 ← home, projecten, tools, over, contact
+└── styles/global.css      ← tokens, centimeterraster, tegels
+public/
+├── admin/                 ← Decap CMS
+└── images/                ← alle foto's, verwezen als /images/<naam>
 ```
 
-## Een nieuw project toevoegen
+## Een project toevoegen
 
-Maak een nieuw `.md` bestand aan in `src/pages/projecten/`:
+Via `/admin`, of met een nieuw bestand in `src/content/projecten/`. De bestandsnaam is gelijk aan de slug.
 
 ```markdown
 ---
 title: "Naam van het project"
-slug: "url-vriendelijke-naam"
-category: "3D Printen"          # of: CNC & Houtbewerking, Tabletop
+slug: "naam-van-het-project"
+category: "CNC & Houtbewerking"   # of: 3D Printen, Tabletop
 description: "Korte omschrijving (1-2 zinnen)"
-date: "2025-03-01"
-tags: ["PLA", "Bambu", "Fusion 360"]
-image: "/images/mijn-project.jpg"   # optioneel
+date: "2026-10-01"
+tags: ["Hout", "Router"]
+image: "/images/mijn-project.jpg"    # optioneel, wordt vierkant bijgesneden
+gallery: ["/images/detail.jpg"]      # optioneel, extra foto's
+machine: "Makita RTC 0700"           # optioneel, vrije tekst in het stempelveld
+tools: ["bambu-p1s"]                 # optioneel, slugs uit src/content/tools
+dimensions: { width: 600, depth: 400 } # optioneel, toont maatlijnen in mm
 ---
 
-## Markdown inhoud hier
+## Over dit project
 
-Vertel over het project, het proces, materialen, etc.
+Tekst in markdown. Elke `##`-kop krijgt automatisch een nummer (01, 02, …).
 ```
 
-Categorieën voor de filter:
-- `3D Printen`
-- `CNC & Houtbewerking`
-- `Tabletop`
+Onderdeelnummers (BB-001, BB-002, …) worden automatisch toegekend op volgorde van datum. Een fout in de frontmatter (bijvoorbeeld een onbekende categorie) laat de build stoppen met een duidelijke melding.
 
-## Afbeeldingen
+## Een tool toevoegen
 
-Zet foto's in de `public/images/` map en verwijs ernaar als `/images/bestandsnaam.jpg`.
+Nieuw bestand in `src/content/tools/` met `name`, `slug`, `category` (3D Printen, CNC, Houtbewerking of Resin), `description` en optioneel `order` (positie in de stuklijst), `tags` en `image`.
 
-## Hosten op Netlify (gratis)
+## Contactformulier
 
-1. Push naar GitHub
-2. Ga naar [netlify.com](https://netlify.com) → New site from Git
-3. Build command: `npm run build`
-4. Publish directory: `dist`
-5. Klaar! Gratis SSL en custom domein mogelijk.
-
-## Contactformulier activeren
-
-In `src/pages/contact/index.astro`, vervang de simulatie door Formspree:
-
-1. Maak een gratis account op [formspree.io](https://formspree.io)
-2. Maak een nieuw formulier aan, kopieer jouw form ID
-3. Uncomment de fetch code en vul je ID in
-
-## Aanpassen
-
-Alle kleuren en fonts zijn CSS variables in `src/styles/global.css`.
-Jouw naam/URL aanpassen: zoek op `evin` en `Evin.makes`.
+Het formulier gebruikt Netlify Forms. Berichten verschijnen in het Netlify-dashboard onder **Forms**; daar kun je ook e-mailnotificaties aanzetten.

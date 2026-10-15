@@ -5,6 +5,7 @@ category: "3D Printen"
 description: "MSLA resin printer voor hoge detailnauwkeurigheid — miniaturen en kleine onderdelen."
 tags: ["Resin", "MSLA", "Miniaturen"]
 image: "/images/tools/mars-3-pro.jpg"
+order: 2
 ---
 
 ## Over deze machine
