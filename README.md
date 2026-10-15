@@ -5,10 +5,10 @@ Maker-portfolio van Evin Wijninga op [builderbasement.com](https://builderbaseme
 ## Tech stack
 
 - **Framework:** Astro 6, statisch (`output: static`)
-- **Content:** Astro content collections (markdown + frontmatter, gevalideerd met een schema)
+- **Content:** Supabase (Postgres + Storage) als `PUBLIC_SUPABASE_URL` en `PUBLIC_SUPABASE_ANON_KEY` gezet zijn; anders de markdown in `src/content/` (content collections met schema)
 - **Styling:** pure CSS met custom properties in `src/styles/global.css`, design "Kelder"
 - **Fonts:** DM Serif Display, Outfit en DM Mono, self-hosted via `@fontsource`
-- **CMS:** Decap CMS op `/admin` met Netlify Identity (wordt later vervangen door een eigen admin op Supabase)
+- **Beheer:** eigen admin op `/admin` (Supabase Auth); de knop "Site publiceren" start via een Netlify Function een nieuwe build
 - **Hosting:** Netlify, bouwt automatisch bij elke push naar `main`
 
 ## Snel starten
@@ -28,19 +28,25 @@ src/
 ├── content/
 │   ├── projecten/*.md     ← één bestand per project
 │   └── tools/*.md         ← één bestand per machine
-├── lib/content.ts         ← ophalen, sorteren, onderdeelnummers (BB-001…) en posities (T-01…)
+├── lib/content.ts         ← haalt content uit Supabase of markdown, nummert (BB-001…, T-01…)
+├── admin/app.ts           ← de beheer-app op /admin
 ├── components/            ← Nav, Footer (titelblok), ProjectCard, Figure, TitleBlock (stempelveld), ToolTable
 ├── layouts/Base.astro
 ├── pages/                 ← home, projecten, tools, over, contact
 └── styles/global.css      ← tokens, centimeterraster, tegels
-public/
-├── admin/                 ← Decap CMS
-└── images/                ← alle foto's, verwezen als /images/<naam>
+public/images/             ← foto's voor de markdown-fallback
+supabase/migrations/       ← databaseschema, RLS en storage
+scripts/migrate-content.mjs ← eenmalige migratie markdown → Supabase
+netlify/functions/         ← rebuild-functie voor "Site publiceren"
 ```
+
+## Supabase
+
+Zie [docs/supabase-setup.md](docs/supabase-setup.md) voor het koppelen van een nieuw project. Kopieer `.env.example` naar `.env` om lokaal tegen Supabase te bouwen.
 
 ## Een project toevoegen
 
-Via `/admin`, of met een nieuw bestand in `src/content/projecten/`. De bestandsnaam is gelijk aan de slug.
+Met Supabase: via `/admin`. Zonder Supabase: met een nieuw bestand in `src/content/projecten/`. De bestandsnaam is gelijk aan de slug.
 
 ```markdown
 ---

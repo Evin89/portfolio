@@ -34,8 +34,6 @@ const ogImage = image ? new URL(image, Astro.site).href : undefined;
     <meta property="og:url" content={canonical} />
     {ogImage && <meta property="og:image" content={ogImage} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- Netlify Identity: nodig voor Decap CMS op /admin, vervalt bij de overstap naar Supabase (spec §7) -->
-    <script is:inline src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Naar de inhoud</a>
@@ -44,21 +42,6 @@ const ogImage = image ? new URL(image, Astro.site).href : undefined;
       <slot />
     </main>
     <Footer />
-    <script is:inline>
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on('init', (user) => {
-          if (!user) {
-            window.netlifyIdentity.on('login', () => {
-              document.location.href = '/admin/';
-            });
-          }
-        });
-        const hash = window.location.hash;
-        if (hash && (hash.includes('recovery_token') || hash.includes('invite_token') || hash.includes('confirmation_token'))) {
-          window.netlifyIdentity.open();
-        }
-      }
-    </script>
   </body>
 </html>
 

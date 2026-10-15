@@ -1,9 +1,8 @@
 ---
-import { render, getEntries } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Figure from '../../components/Figure.astro';
 import TitleBlock from '../../components/TitleBlock.astro';
-import { getProjects, existingImage, formatMonth, type Project } from '../../lib/content';
+import { getProjects, renderMarkdown, formatMonth, type Project } from '../../lib/content';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -21,14 +20,11 @@ interface Props {
 }
 
 const { project, prev, next } = Astro.props;
-const { title, category, description, date, tags, image, gallery, machine, dimensions } = project.data;
-const { Content } = await render(project);
-const usedTools = await getEntries(project.data.tools);
-const cover = existingImage(image);
-const extra = gallery.map((g) => existingImage(g)).filter((g): g is string => Boolean(g));
+const { title, category, description, date, tags, image, gallery, machine, dimensions, tools } = project;
+const html = renderMarkdown(project.body);
 ---
 
-<Base title={title} description={description} image={cover}>
+<Base title={title} description={description} image={image?.src}>
   <div class="container">
     <nav class="crumbs mono" aria-label="Kruimelpad">
       <a href="/projecten">Projecten</a>
@@ -45,7 +41,7 @@ const extra = gallery.map((g) => existingImage(g)).filter((g): g is string => Bo
     </header>
 
     <section class="split">
-      <Figure src={cover} alt={title} caption="Fig. 1 — Overzicht" size="tile-l" dimensions={dimensions} eager />
+      <Figure image={image} alt={title} caption="Fig. 1 — Overzicht" size="tile-l" dimensions={dimensions} eager />
       <TitleBlock
         rows={[
           { label: 'Nummer', value: project.nr, accent: true },
@@ -54,18 +50,16 @@ const extra = gallery.map((g) => existingImage(g)).filter((g): g is string => Bo
           { label: 'Machine', value: machine },
         ]}
         tags={tags}
-        links={usedTools.map((t) => ({ label: t.data.name, href: `/tools/${t.id}` }))}
+        links={tools.map((t) => ({ label: t.name, href: `/tools/${t.id}` }))}
       />
     </section>
 
     <section class="body">
-      <article class="prose">
-        <Content />
-      </article>
-      {extra.length > 0 && (
+      <article class="prose" set:html={html} />
+      {gallery.length > 0 && (
         <div class="gallery">
-          {extra.map((src, i) => (
-            <Figure src={src} alt={`${title}, detail ${i + 1}`} caption={`Fig. ${i + 2} — Detail`} size="tile" />
+          {gallery.map((img, i) => (
+            <Figure image={img} alt={`${title}, detail ${i + 1}`} caption={`Fig. ${i + 2} — Detail`} size="tile" />
           ))}
         </div>
       )}
@@ -75,13 +69,13 @@ const extra = gallery.map((g) => existingImage(g)).filter((g): g is string => Bo
       {prev ? (
         <a href={`/projecten/${prev.id}`}>
           <span class="label">← Vorig · {prev.nr}</span>
-          <span class="t">{prev.data.title}</span>
+          <span class="t">{prev.title}</span>
         </a>
       ) : <span />}
       {next && (
         <a href={`/projecten/${next.id}`} class="right">
           <span class="label">Volgend · {next.nr} →</span>
-          <span class="t">{next.data.title}</span>
+          <span class="t">{next.title}</span>
         </a>
       )}
     </nav>

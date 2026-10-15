@@ -1,0 +1,61 @@
+---
+/**
+ * Eigen beheeromgeving (spec §7). Draait volledig in de browser met supabase-js;
+ * de echte beveiliging is RLS in de database, niet deze pagina.
+ */
+import '../../styles/global.css';
+import '../../styles/admin.css';
+
+const configured = Boolean(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_ANON_KEY);
+---
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Beheer · Builder Basement</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="admin">
+    <header class="a-bar">
+      <a href="/" class="a-brand"><span class="a-mark">BB</span> Beheer</a>
+      <nav class="a-tabs" aria-label="Beheer" hidden>
+        <button type="button" data-tab="projects" aria-pressed="true">Projecten</button>
+        <button type="button" data-tab="tools" aria-pressed="false">Tools</button>
+      </nav>
+      <div class="a-actions" hidden>
+        <button type="button" class="a-btn" id="publish">Site publiceren</button>
+        <button type="button" class="a-btn ghost" id="logout">Uitloggen</button>
+      </div>
+    </header>
+
+    <main class="a-main">
+      <p id="flash" class="a-flash" role="status" aria-live="polite"></p>
+
+      {configured ? (
+        <div id="app">
+          <form id="login" class="a-card a-login" hidden>
+            <h1>Inloggen</h1>
+            <label>E-mail <input type="email" name="email" autocomplete="username" required /></label>
+            <label>Wachtwoord <input type="password" name="password" autocomplete="current-password" required /></label>
+            <button type="submit" class="a-btn">Inloggen</button>
+          </form>
+          <section id="view"></section>
+        </div>
+      ) : (
+        <div class="a-card">
+          <h1>Supabase is nog niet gekoppeld</h1>
+          <p>
+            Zet <code>PUBLIC_SUPABASE_URL</code> en <code>PUBLIC_SUPABASE_ANON_KEY</code> in de omgevingsvariabelen
+            van Netlify (of in <code>.env</code> lokaal) en bouw opnieuw. Zie <code>docs/supabase-setup.md</code>.
+          </p>
+        </div>
+      )}
+    </main>
+
+    <script>
+      import '../../admin/app.ts';
+    </script>
+  </body>
+</html>

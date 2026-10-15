@@ -23,9 +23,9 @@ const { tools } = Astro.props;
       {tools.map((tool) => (
         <tr>
           <td class="pos">{tool.pos}</td>
-          <td class="name"><a href={`/tools/${tool.id}`}>{tool.data.name}</a></td>
-          <td>{tool.data.category}</td>
-          <td class="desc">{tool.data.description}</td>
+          <td class="name"><a href={`/tools/${tool.id}`}>{tool.name}</a></td>
+          <td>{tool.category}</td>
+          <td class="desc">{tool.description}</td>
         </tr>
       ))}
     </tbody>

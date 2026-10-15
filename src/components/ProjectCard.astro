@@ -1,18 +1,17 @@
 ---
-import { existingImage, formatShort, type Project } from '../lib/content';
+import { formatShort, type Project } from '../lib/content';
 
 interface Props {
   project: Project;
 }
 
 const { project } = Astro.props;
-const { title, category, description, date, image } = project.data;
-const src = existingImage(image);
+const { title, category, description, date, image } = project;
 ---
 
 <a href={`/projecten/${project.id}`} class="card" data-category={category}>
   <div class="frame tile">
-    {src ? <img src={src} alt="" loading="lazy" decoding="async" /> : <div class="tile-empty">Geen foto</div>}
+    {image ? <img src={image.src} alt="" width={image.width} height={image.height} loading="lazy" decoding="async" /> : <div class="tile-empty">Geen foto</div>}
     <span class="nr">{project.nr}</span>
   </div>
   <div class="meta mono">

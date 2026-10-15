@@ -1,10 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
-import { getProjects, PROJECT_CATEGORIES } from '../../lib/content';
+import { getProjects, getProjectCategories } from '../../lib/content';
 
 const projects = await getProjects();
-const categories = PROJECT_CATEGORIES.filter((c) => projects.some((p) => p.data.category === c));
+const categories = (await getProjectCategories()).filter((c) => projects.some((p) => p.category === c));
 ---
 
 <Base title="Projecten" description="Alle maker-projecten van Evin — 3D printen, CNC, houtbewerking en miniaturen.">

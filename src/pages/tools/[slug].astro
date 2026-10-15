@@ -1,9 +1,8 @@
 ---
-import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Figure from '../../components/Figure.astro';
 import TitleBlock from '../../components/TitleBlock.astro';
-import { getTools, getProjects, existingImage, type Tool } from '../../lib/content';
+import { getTools, getProjects, renderMarkdown, type Tool } from '../../lib/content';
 
 export async function getStaticPaths() {
   const tools = await getTools();
@@ -15,13 +14,12 @@ interface Props {
 }
 
 const { tool } = Astro.props;
-const { name, category, description, tags, image } = tool.data;
-const { Content } = await render(tool);
-const usedIn = (await getProjects()).filter((p) => p.data.tools.some((t) => t.id === tool.id));
-const src = existingImage(image);
+const { name, category, description, tags, image } = tool;
+const html = renderMarkdown(tool.body);
+const usedIn = (await getProjects()).filter((p) => p.tools.some((t) => t.id === tool.id));
 ---
 
-<Base title={name} description={description} image={src}>
+<Base title={name} description={description} image={image?.src}>
   <div class="container">
     <nav class="crumbs mono" aria-label="Kruimelpad">
       <a href="/tools">Tools</a>
@@ -36,21 +34,19 @@ const src = existingImage(image);
     </header>
 
     <section class="split">
-      <Figure src={src} alt={name} caption="Fig. 1 — Machine" size="tile" eager />
+      <Figure image={image} alt={name} caption="Fig. 1 — Machine" size="tile" eager />
       <TitleBlock
         rows={[
           { label: 'Positie', value: tool.pos, accent: true },
           { label: 'Categorie', value: category },
         ]}
         tags={tags}
-        links={usedIn.map((p) => ({ label: `${p.nr} ${p.data.title}`, href: `/projecten/${p.id}` }))}
+        links={usedIn.map((p) => ({ label: `${p.nr} ${p.title}`, href: `/projecten/${p.id}` }))}
         linksLabel="Gebruikt in"
       />
     </section>
 
-    <article class="prose body">
-      <Content />
-    </article>
+    <article class="prose body" set:html={html} />
 
     <a href="/tools" class="back mono">← Terug naar de stuklijst</a>
   </div>

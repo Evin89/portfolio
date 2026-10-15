@@ -3,19 +3,19 @@ import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import ToolTable from '../components/ToolTable.astro';
 import Figure from '../components/Figure.astro';
-import { getProjects, getTools, existingImage, PROJECT_CATEGORIES } from '../lib/content';
+import { getProjects, getTools, getProjectCategories } from '../lib/content';
 
 const projects = await getProjects();
 const tools = await getTools();
 const recent = projects.slice(0, 3);
-const featured = projects.find((p) => existingImage(p.data.image));
-const counts = PROJECT_CATEGORIES.map((cat) => ({
+const featured = projects.find((p) => p.image);
+const counts = (await getProjectCategories()).map((cat) => ({
   cat,
-  n: projects.filter((p) => p.data.category === cat).length,
+  n: projects.filter((p) => p.category === cat).length,
 }));
 ---
 
-<Base title="Home" image={featured?.data.image}>
+<Base title="Home" image={featured?.image?.src}>
   <section class="container hero">
     <div class="hero-text">
       <div class="kicker">Blad 01 · Maker uit Rotterdam</div>
@@ -32,11 +32,11 @@ const counts = PROJECT_CATEGORIES.map((cat) => ({
     {featured && (
       <a href={`/projecten/${featured.id}`} class="hero-fig">
         <Figure
-          src={existingImage(featured.data.image)}
-          alt={featured.data.title}
-          caption={`Fig. 1 — ${featured.nr} ${featured.data.title}`}
+          image={featured.image}
+          alt={featured.title}
+          caption={`Fig. 1 — ${featured.nr} ${featured.title}`}
           size="tile"
-          dimensions={featured.data.dimensions}
+          dimensions={featured.dimensions}
           eager
         />
       </a>

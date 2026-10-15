@@ -3,8 +3,10 @@
  * Foto in een vaste tegel met goudkleurige hoekmarkeringen, een figuurbijschrift
  * en (optioneel) maatlijnen langs de onder- en rechterrand.
  */
+import type { Img } from '../lib/content';
+
 interface Props {
-  src?: string;
+  image?: Img;
   alt: string;
   caption?: string;
   size?: 'tile' | 'tile-l';
@@ -12,14 +14,14 @@ interface Props {
   eager?: boolean;
 }
 
-const { src, alt, caption, size = 'tile-l', dimensions, eager = false } = Astro.props;
+const { image, alt, caption, size = 'tile-l', dimensions, eager = false } = Astro.props;
 ---
 
 <figure class:list={['fig', { 'has-dims': dimensions }]}>
   {caption && <figcaption class="label">{caption}</figcaption>}
   <div class:list={['frame', size]}>
-    {src ? (
-      <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" fetchpriority={eager ? 'high' : 'auto'} />
+    {image ? (
+      <img src={image.src} alt={image.alt || alt} width={image.width} height={image.height} loading={eager ? 'eager' : 'lazy'} decoding="async" fetchpriority={eager ? 'high' : 'auto'} />
     ) : (
       <div class="tile-empty">Geen foto</div>
     )}
