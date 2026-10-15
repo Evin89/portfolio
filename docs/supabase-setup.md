@@ -8,12 +8,12 @@
 - **Admin-account:** `e.d.wijninga@gmail.com` met de rol `admin`. Wijzig het tijdelijke wachtwoord via **Wachtwoord** in `/admin`.
 - **Netlify:** de project-URL en de publieke sleutel staan in `netlify.toml`, dus builds lezen automatisch uit Supabase.
 
-## Nog te doen (handmatig)
+## Instellingen (gedaan op 15 oktober 2026)
 
-1. **Build hook voor "Site publiceren"**: Netlify → **Site configuration → Build & deploy → Build hooks** → **Add build hook** (naam `Admin publiceren`, branch `main`). Zet de URL als omgevingsvariabele `NETLIFY_BUILD_HOOK_URL` onder **Site configuration → Environment variables**.
-2. **Registratie uitzetten**: Supabase → **Authentication → Sign In / Providers** → zet **Allow new users to sign up** uit. Zonder admin-rol kan een nieuw account niets wijzigen, maar zo blijft de gebruikerslijst schoon.
-3. **Site URL**: Supabase → **Authentication → URL Configuration** → zet de **Site URL** op `https://builderbasement.com` en voeg `https://builderbasement.com/admin/` toe aan de **Redirect URLs**. Dat is nodig voor e-mails zoals "wachtwoord vergeten".
-4. **Opruimen**: verwijder de GitHub-branch `tmp/migratie-fotos` en, in Supabase onder **Edge Functions**, de uitgeschakelde functie `migratie`. Beide waren alleen voor de eenmalige migratie.
+- Registratie van nieuwe gebruikers staat uit in Supabase.
+- De Site URL is `https://builderbasement.com`, met als redirect `https://builderbasement.com/admin/`.
+- De Netlify build hook `Admin publiceren` (branch `main`) bestaat. De URL ervan staat als `NETLIFY_BUILD_HOOK_URL` in de Netlify-omgevingsvariabelen.
+- De tijdelijke migratiefunctie is verwijderd.
 
 ## Een nieuw project opzetten (voor later of een kopie)
 
