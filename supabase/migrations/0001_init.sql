@@ -11,6 +11,7 @@ create or replace function public.is_admin()
 returns boolean
 language sql
 stable
+set search_path = ''
 as $$
   select coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false);
 $$;
@@ -18,6 +19,7 @@ $$;
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   new.updated_at = now();
@@ -98,6 +100,11 @@ create table public.project_tools (
 
 create index photos_project_idx on public.photos (project_id, sort_order);
 create index photos_tool_idx on public.photos (tool_id, sort_order);
+create index projects_category_idx on public.projects (category_id);
+create index tools_category_idx on public.tools (category_id);
+create index projects_cover_idx on public.projects (cover_photo_id);
+create index tools_cover_idx on public.tools (cover_photo_id);
+create index project_tools_tool_idx on public.project_tools (tool_id);
 create index projects_date_idx on public.projects (date desc);
 
 create trigger projects_updated_at before update on public.projects
@@ -118,35 +125,55 @@ alter table public.project_tools enable row level security;
 
 create policy "categories: iedereen leest" on public.categories
   for select using (true);
-create policy "categories: admin schrijft" on public.categories
-  for all using (public.is_admin()) with check (public.is_admin());
+create policy "categories: admin voegt toe" on public.categories
+  for insert to authenticated with check ((select public.is_admin()));
+create policy "categories: admin wijzigt" on public.categories
+  for update to authenticated using ((select public.is_admin())) with check ((select public.is_admin()));
+create policy "categories: admin verwijdert" on public.categories
+  for delete to authenticated using ((select public.is_admin()));
 
 create policy "projects: gepubliceerd of admin" on public.projects
-  for select using (published or public.is_admin());
-create policy "projects: admin schrijft" on public.projects
-  for all using (public.is_admin()) with check (public.is_admin());
+  for select using (published or (select public.is_admin()));
+create policy "projects: admin voegt toe" on public.projects
+  for insert to authenticated with check ((select public.is_admin()));
+create policy "projects: admin wijzigt" on public.projects
+  for update to authenticated using ((select public.is_admin())) with check ((select public.is_admin()));
+create policy "projects: admin verwijdert" on public.projects
+  for delete to authenticated using ((select public.is_admin()));
 
 create policy "tools: gepubliceerd of admin" on public.tools
-  for select using (published or public.is_admin());
-create policy "tools: admin schrijft" on public.tools
-  for all using (public.is_admin()) with check (public.is_admin());
+  for select using (published or (select public.is_admin()));
+create policy "tools: admin voegt toe" on public.tools
+  for insert to authenticated with check ((select public.is_admin()));
+create policy "tools: admin wijzigt" on public.tools
+  for update to authenticated using ((select public.is_admin())) with check ((select public.is_admin()));
+create policy "tools: admin verwijdert" on public.tools
+  for delete to authenticated using ((select public.is_admin()));
 
 create policy "photos: zichtbaar als eigenaar gepubliceerd is" on public.photos
   for select using (
-    public.is_admin()
+    (select public.is_admin())
     or exists (select 1 from public.projects p where p.id = project_id and p.published)
     or exists (select 1 from public.tools t where t.id = tool_id and t.published)
   );
-create policy "photos: admin schrijft" on public.photos
-  for all using (public.is_admin()) with check (public.is_admin());
+create policy "photos: admin voegt toe" on public.photos
+  for insert to authenticated with check ((select public.is_admin()));
+create policy "photos: admin wijzigt" on public.photos
+  for update to authenticated using ((select public.is_admin())) with check ((select public.is_admin()));
+create policy "photos: admin verwijdert" on public.photos
+  for delete to authenticated using ((select public.is_admin()));
 
 create policy "project_tools: zichtbaar als project gepubliceerd is" on public.project_tools
   for select using (
-    public.is_admin()
+    (select public.is_admin())
     or exists (select 1 from public.projects p where p.id = project_id and p.published)
   );
-create policy "project_tools: admin schrijft" on public.project_tools
-  for all using (public.is_admin()) with check (public.is_admin());
+create policy "project_tools: admin voegt toe" on public.project_tools
+  for insert to authenticated with check ((select public.is_admin()));
+create policy "project_tools: admin wijzigt" on public.project_tools
+  for update to authenticated using ((select public.is_admin())) with check ((select public.is_admin()));
+create policy "project_tools: admin verwijdert" on public.project_tools
+  for delete to authenticated using ((select public.is_admin()));
 
 -- ─────────────────────────────────────────────────────────────
 -- Storage: bucket "media" (spec §6.2) — publiek leesbaar, alleen admin schrijft
@@ -157,11 +184,11 @@ values ('media', 'media', true, 10485760, array['image/jpeg', 'image/png', 'imag
 on conflict (id) do nothing;
 
 create policy "media: admin uploadt" on storage.objects
-  for insert to authenticated with check (bucket_id = 'media' and public.is_admin());
+  for insert to authenticated with check (bucket_id = 'media' and (select public.is_admin()));
 create policy "media: admin wijzigt" on storage.objects
-  for update to authenticated using (bucket_id = 'media' and public.is_admin());
+  for update to authenticated using (bucket_id = 'media' and (select public.is_admin()));
 create policy "media: admin verwijdert" on storage.objects
-  for delete to authenticated using (bucket_id = 'media' and public.is_admin());
+  for delete to authenticated using (bucket_id = 'media' and (select public.is_admin()));
 
 -- ─────────────────────────────────────────────────────────────
 -- Startcategorieën (zelfde als de huidige site)

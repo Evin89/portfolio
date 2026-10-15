@@ -4,3 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # Supabase-project "BuilderBasementPortfolio". Deze waarden zijn publiek (ze staan ook in de browser);
+  # de data is beschermd met Row Level Security. Geheime sleutels horen NIET hier maar in de Netlify-omgevingsvariabelen.
+  PUBLIC_SUPABASE_URL = "https://xytffvzptkeffmbmfric.supabase.co"
+  PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_FgKb6Eyyg4WmKrSlfS9ilA_WSwdCqP4"

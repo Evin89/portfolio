@@ -1,24 +1,25 @@
-# Supabase koppelen — stap voor stap
+# Supabase — stand van zaken en beheer
 
-Eenmalig, ongeveer 20 minuten. Tot stap 6 klaar is, blijft de live site gewoon uit de markdown in `src/content/` bouwen.
+## Wat er al staat (15 oktober 2026)
 
-## 1. Project aanmaken
+- **Project:** `BuilderBasementPortfolio` (`xytffvzptkeffmbmfric`, regio eu-west-1), in de organisatie "Mordheim Manager".
+- **Schema:** `supabase/migrations/0001_init.sql` is uitgevoerd. Er zijn tabellen, RLS-regels en de bucket `media`, zonder beveiligingsmeldingen van de Supabase-adviseur.
+- **Content:** de 4 projecten en 3 tools uit `src/content/` staan in de database. Er staan 5 foto's als WebP in `media`, met beschrijvende alt-teksten. De Swillpot heeft geen foto, net als in de markdown.
+- **Admin-account:** `e.d.wijninga@gmail.com` met de rol `admin`. Wijzig het tijdelijke wachtwoord via **Wachtwoord** in `/admin`.
+- **Netlify:** de project-URL en de publieke sleutel staan in `netlify.toml`, dus builds lezen automatisch uit Supabase.
 
-1. Ga naar [supabase.com/dashboard](https://supabase.com/dashboard) → **New project**.
-2. Naam: `builder-basement`. Regio: **West EU (Ireland)** of **Central EU (Frankfurt)**.
-3. Kies een sterk databasewachtwoord en bewaar het in je wachtwoordmanager. Je hebt het verder niet nodig voor de site.
+## Nog te doen (handmatig)
 
-## 2. Schema installeren
+1. **Build hook voor "Site publiceren"**: Netlify → **Site configuration → Build & deploy → Build hooks** → **Add build hook** (naam `Admin publiceren`, branch `main`). Zet de URL als omgevingsvariabele `NETLIFY_BUILD_HOOK_URL` onder **Site configuration → Environment variables**.
+2. **Registratie uitzetten**: Supabase → **Authentication → Sign In / Providers** → zet **Allow new users to sign up** uit. Zonder admin-rol kan een nieuw account niets wijzigen, maar zo blijft de gebruikerslijst schoon.
+3. **Site URL**: Supabase → **Authentication → URL Configuration** → zet de **Site URL** op `https://builderbasement.com` en voeg `https://builderbasement.com/admin/` toe aan de **Redirect URLs**. Dat is nodig voor e-mails zoals "wachtwoord vergeten".
+4. **Opruimen**: verwijder de GitHub-branch `tmp/migratie-fotos` en, in Supabase onder **Edge Functions**, de uitgeschakelde functie `migratie`. Beide waren alleen voor de eenmalige migratie.
 
-1. Open in het project **SQL Editor** → **New query**.
-2. Plak de inhoud van `supabase/migrations/0001_init.sql` en klik **Run**.
-3. Controle: onder **Table Editor** staan nu `categories`, `projects`, `tools`, `photos` en `project_tools`, en onder **Storage** de bucket `media`.
+## Een nieuw project opzetten (voor later of een kopie)
 
-## 3. Jezelf admin maken
-
-1. **Authentication** → **Sign In / Providers** → zet **Allow new users to sign up** uit. Alleen jij hoeft in te loggen.
-2. **Authentication** → **Users** → **Add user** → **Create new user**. Vul je e-mail en een wachtwoord in en vink **Auto Confirm User** aan.
-3. Geef dat account beheerrechten in de **SQL Editor** (vervang het e-mailadres):
+1. Maak een nieuw project aan op [supabase.com/dashboard](https://supabase.com/dashboard).
+2. Voer `supabase/migrations/0001_init.sql` uit in de **SQL Editor**.
+3. Maak een gebruiker aan onder **Authentication → Users** en geef die beheerrechten:
 
    ```sql
    update auth.users
@@ -26,44 +27,10 @@ Eenmalig, ongeveer 20 minuten. Tot stap 6 klaar is, blijft de live site gewoon u
    where email = 'jouw@email.nl';
    ```
 
-## 4. Sleutels in Netlify zetten
-
-Onder **Project Settings → API** in Supabase staan de **Project URL** en de **anon public** key. Zet ze in Netlify onder **Site configuration → Environment variables**:
-
-| Variabele | Waarde |
-| --- | --- |
-| `PUBLIC_SUPABASE_URL` | de Project URL |
-| `PUBLIC_SUPABASE_ANON_KEY` | de anon public key |
-| `NETLIFY_BUILD_HOOK_URL` | zie stap 5 |
-
-De anon key mag publiek zijn: de beveiliging zit in de database (Row Level Security). De **service_role** key hoort **nooit** in Netlify of in git.
-
-## 5. Build hook voor de knop "Site publiceren"
-
-1. Netlify → **Site configuration → Build & deploy → Build hooks** → **Add build hook**. Naam: `Admin publiceren`, branch: `main`.
-2. Kopieer de URL en zet die als `NETLIFY_BUILD_HOOK_URL` (stap 4).
-
-## 6. Content overzetten
-
-Lokaal, in de repo:
-
-```bash
-npm install
-# eerst kijken wat er gebeurt:
-node scripts/migrate-content.mjs --dry-run
-# dan echt (service_role key staat onder Project Settings → API):
-SUPABASE_URL=https://xxxx.supabase.co SUPABASE_SERVICE_ROLE_KEY=... node scripts/migrate-content.mjs
-```
-
-Het script zet de 4 projecten en 3 tools in de database, verkleint de foto's tot WebP (van ~2 MB naar ~100 kB) en uploadt ze naar `media`. Je kunt het veilig opnieuw draaien: bestaande items worden bijgewerkt.
-
-## 7. Live zetten
-
-1. Merge de pull request naar `main`. Netlify bouwt nu vanuit Supabase.
-2. Ga naar `builderbasement.com/admin`, log in, en controleer de projecten.
-3. Na wijzigingen: klik **Site publiceren**. Na ongeveer een minuut is de site bijgewerkt.
+4. Zet de content over met `SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… node scripts/migrate-content.mjs`. Probeer eerst `--dry-run`. De service role key gebruik je alleen lokaal: nooit in Netlify of in git.
+5. Pas `PUBLIC_SUPABASE_URL` en `PUBLIC_SUPABASE_ANON_KEY` aan in `netlify.toml`.
 
 ## Goed om te weten
 
-- **Gratis Supabase-projecten worden gepauzeerd** na een week zonder activiteit. De site blijft dan gewoon werken (het is statische HTML), maar de admin en nieuwe builds niet tot je het project in het dashboard weer aanzet.
-- **Terugvallen op markdown**: haal `PUBLIC_SUPABASE_URL` weg uit Netlify en bouw opnieuw. De markdown in `src/content/` blijft voorlopig in de repo staan als reserve.
+- **Gratis projecten worden gepauzeerd** na ongeveer een week zonder activiteit. De site blijft gewoon werken, want het is statische HTML. De admin en nieuwe builds werken pas weer als je het project in het dashboard herstart.
+- **Terug naar markdown**: haal de twee `PUBLIC_SUPABASE_*`-regels uit `netlify.toml`. De markdown in `src/content/` blijft als reserve in de repo staan.

@@ -139,10 +139,36 @@ if (app && URL_ && KEY) {
 
   function route() {
     const [, kind = 'projects', id] = location.hash.split('/');
+    if (kind === 'account') return renderAccount();
     tab = kind === 'tools' ? 'tools' : 'projects';
     document.querySelectorAll<HTMLButtonElement>('.a-tabs button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tab === tab)));
     if (id) renderEditor(tab, id === 'new' ? null : id);
     else renderList(tab);
+  }
+
+  // ─── Account: wachtwoord wijzigen ────────────────────────
+
+  function renderAccount() {
+    document.querySelectorAll<HTMLButtonElement>('.a-tabs button').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+    view.innerHTML = `
+      <div class="a-head"><h1>Wachtwoord wijzigen</h1><a href="#/projects" class="hint">← Terug</a></div>
+      <form id="pw" class="a-card a-login">
+        <p class="hint">Ingelogd als ${esc(session?.user.email)}</p>
+        <label>Nieuw wachtwoord <input type="password" name="pw1" autocomplete="new-password" minlength="10" required /></label>
+        <label>Herhaal <input type="password" name="pw2" autocomplete="new-password" minlength="10" required /></label>
+        <button type="submit" class="a-btn">Opslaan</button>
+      </form>`;
+    const form = $<HTMLFormElement>('#pw');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const pw = String(fd.get('pw1'));
+      if (pw !== String(fd.get('pw2'))) return flash('De wachtwoorden zijn niet gelijk.', true);
+      const { error } = await db.auth.updateUser({ password: pw });
+      if (error) return flash(`Wijzigen mislukt: ${error.message}`, true);
+      form.reset();
+      flash('Wachtwoord gewijzigd.');
+    });
   }
 
   // ─── Lijst ───────────────────────────────────────────────
