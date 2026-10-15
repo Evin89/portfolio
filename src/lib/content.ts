@@ -110,12 +110,12 @@ async function fromSupabase() {
       .from('projects')
       .select(
         `slug, title, description, body, date, tags, machine, dimensions, cover_photo_id,
-         category:categories(name), photos(${photoCols}), project_tools(tool:tools(slug, name))`,
+         category:categories(name), photos!photos_project_id_fkey(${photoCols}), project_tools(tool:tools(slug, name))`,
       )
       .eq('published', true),
     db
       .from('tools')
-      .select(`slug, name, description, body, tags, sort_order, cover_photo_id, category:categories(name), photos(${photoCols})`)
+      .select(`slug, name, description, body, tags, sort_order, cover_photo_id, category:categories(name), photos!photos_tool_id_fkey(${photoCols})`)
       .eq('published', true),
     db.from('categories').select('name, sort_order').eq('kind', 'project').order('sort_order'),
   ]);
