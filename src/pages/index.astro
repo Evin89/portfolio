@@ -91,14 +91,15 @@ const counts = (await getProjectCategories()).map((cat) => ({
   .cta { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 40px; }
   .hero-fig { display: block; color: inherit; }
 
+  /* Lijnen via 1px gap op een rule-achtergrond: werkt voor elk aantal categorieën */
   .legend {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 1px;
     border: 1px solid var(--rule);
-    background: var(--panel);
+    background: var(--rule);
   }
-  .legend .cell { display: block; padding: 22px 24px; border-right: 1px solid var(--rule); color: var(--ink); }
-  .legend .cell:last-child { border-right: 0; }
+  .legend .cell { display: block; padding: 22px 24px; background: var(--panel); color: var(--ink); }
   .legend a.cell:hover .name { color: var(--mark); }
   .legend .label { text-transform: none; letter-spacing: 0.06em; }
   .legend .name { margin-top: 6px; font-family: var(--font-display); font-size: 21px; line-height: 1.2; }
@@ -109,7 +110,6 @@ const counts = (await getProjectCategories()).map((cat) => ({
   @media (max-width: 900px) {
     .hero { grid-template-columns: minmax(0, 1fr); gap: 48px; padding-top: 48px; padding-bottom: 64px; }
     .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .legend .cell:nth-child(2) { border-right: 0; }
-    .legend .cell:nth-child(-n + 2) { border-bottom: 1px solid var(--rule); }
+    .legend .cell:first-child { grid-column: 1 / -1; }
   }
 </style>

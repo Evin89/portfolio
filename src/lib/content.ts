@@ -54,7 +54,7 @@ export interface Tool {
 }
 
 /** Projectcategorieën in vaste volgorde, zoals in de legenda (fallback als Supabase niet gebruikt wordt). */
-export const PROJECT_CATEGORIES = ['CNC & Houtbewerking', 'Tabletop', '3D Printen'];
+export const PROJECT_CATEGORIES = ['CNC & Houtbewerking', 'Tabletop', '3D Printen', 'Code & Software'];
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL as string | undefined;
 const SUPABASE_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY as string | undefined;

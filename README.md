@@ -52,7 +52,7 @@ Met Supabase: via `/admin`. Zonder Supabase: met een nieuw bestand in `src/conte
 ---
 title: "Naam van het project"
 slug: "naam-van-het-project"
-category: "CNC & Houtbewerking"   # of: 3D Printen, Tabletop
+category: "CNC & Houtbewerking"   # of: 3D Printen, Tabletop, Code & Software
 description: "Korte omschrijving (1-2 zinnen)"
 date: "2026-10-01"
 tags: ["Hout", "Router"]

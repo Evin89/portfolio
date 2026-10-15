@@ -11,7 +11,7 @@ const projecten = defineCollection({
   schema: z.object({
     title: z.string(),
     slug: z.string(),
-    category: z.enum(['3D Printen', 'CNC & Houtbewerking', 'Tabletop']),
+    category: z.enum(['3D Printen', 'CNC & Houtbewerking', 'Tabletop', 'Code & Software']),
     description: z.string(),
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
