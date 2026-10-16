@@ -106,6 +106,25 @@ if (app && URL_ && KEY) {
     boot(data.session);
   });
 
+  // Wachtwoord vergeten: Supabase mailt een link terug naar /admin/ (staat in de Redirect URLs).
+  $('#forgot').addEventListener('click', async () => {
+    const email = $<HTMLInputElement>('input[name="email"]', loginForm).value.trim();
+    if (!email) return flash('Vul eerst je e-mailadres in.', true);
+    const { error } = await db.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/admin/` });
+    if (error) return flash(`Versturen mislukt: ${error.message}`, true);
+    flash('Als dit adres bekend is, staat er nu een mail met een herstellink in je inbox.');
+  });
+
+  // Komt iemand binnen via die herstellink, dan meteen naar "wachtwoord wijzigen".
+  db.auth.onAuthStateChange((event, s) => {
+    if (event !== 'PASSWORD_RECOVERY') return;
+    setTimeout(async () => {
+      await boot(s);
+      location.hash = '#/account';
+      flash('Kies een nieuw wachtwoord.');
+    }, 0);
+  });
+
   $('#logout').addEventListener('click', async () => {
     await db.auth.signOut();
     location.hash = '';
