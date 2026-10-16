@@ -7,15 +7,23 @@
  */
 import type { Config } from '@netlify/functions';
 
+const PUBLIC_SUPABASE_URL = 'https://xytffvzptkeffmbmfric.supabase.co';
+const PUBLIC_SUPABASE_ANON_KEY = 'sb_publishable_FgKb6Eyyg4WmKrSlfS9ilA_WSwdCqP4';
+
 export default async (req: Request): Promise<Response> => {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
 
-  const env = (k: string) => (globalThis as any).Netlify?.env.get(k) ?? process.env[k];
-  const supabaseUrl = env('PUBLIC_SUPABASE_URL');
-  const anonKey = env('PUBLIC_SUPABASE_ANON_KEY');
+  const env = (k: string): string | undefined => (globalThis as any).Netlify?.env.get(k) ?? process.env[k];
+  // De [build.environment]-waarden uit netlify.toml zijn alleen tijdens de build beschikbaar, niet in functies.
+  // De URL en de publieke sleutel zijn niet geheim, dus die staan hier als terugval.
+  const supabaseUrl = env('PUBLIC_SUPABASE_URL') ?? PUBLIC_SUPABASE_URL;
+  const anonKey = env('PUBLIC_SUPABASE_ANON_KEY') ?? PUBLIC_SUPABASE_ANON_KEY;
   const hook = env('NETLIFY_BUILD_HOOK_URL');
-  if (!supabaseUrl || !anonKey || !hook) {
-    return new Response('Server mist PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY of NETLIFY_BUILD_HOOK_URL', { status: 500 });
+  if (!hook) {
+    return new Response(
+      'NETLIFY_BUILD_HOOK_URL ontbreekt. Zet die in Netlify onder Site configuration → Environment variables en deploy opnieuw.',
+      { status: 500 },
+    );
   }
 
   const auth = req.headers.get('authorization') ?? '';
