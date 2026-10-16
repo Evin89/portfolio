@@ -1,17 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { getTools } from '../../lib/content';
 
-const machines = [
-  { name: 'Bambu Lab P1S', tag: '3D' },
-  { name: 'Elegoo Mars 3 Pro', tag: '3D' },
-  { name: 'TwoTrees TTC 450 Pro', tag: 'CNC' },
-  { name: 'Dewalt 7485 Tafelzaag', tag: 'Hout' },
-  { name: 'HiKOKI C8FSHGWAZ', tag: 'Hout' },
-  { name: 'Recordpower Sabre 250 Lintzaag', tag: 'Hout' },
-  { name: '8" Vlak-/vandiktebank', tag: 'Hout' },
-  { name: 'Bosch PBD40 Kolomboor', tag: 'Hout' },
-  { name: 'Makita RTC0700 Router', tag: 'Hout' },
-];
+// Het machinepark komt uit dezelfde bron als de stuklijst, zodat beide altijd gelijk zijn.
+const short: Record<string, string> = { '3D Printen': '3D', CNC: 'CNC', Houtbewerking: 'Hout', Resin: 'Resin' };
+const machines = (await getTools()).map((t) => ({ id: t.id, pos: t.pos, name: t.name, tag: short[t.category] ?? t.category }));
 
 const skills = [
   'Fusion 360', 'FDM Printing', 'Resin Casting', 'CNC Routing',
@@ -54,10 +47,10 @@ const skills = [
         <span class="label">{machines.length} st.</span>
       </div>
       <ol>
-        {machines.map((m, i) => (
+        {machines.map((m) => (
           <li>
-            <span class="pos mono">{String(i + 1).padStart(2, '0')}</span>
-            <span class="name">{m.name}</span>
+            <span class="pos mono">{m.pos}</span>
+            <a class="name" href={`/tools/${m.id}`}>{m.name}</a>
             <span class="tag mono">{m.tag}</span>
           </li>
         ))}
@@ -91,7 +84,7 @@ const skills = [
   ol { list-style: none; }
   li {
     display: grid;
-    grid-template-columns: 32px minmax(0, 1fr) auto;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
     gap: 12px;
     align-items: baseline;
     padding: 12px 20px;
@@ -101,6 +94,8 @@ const skills = [
   li:last-child { border-bottom: 0; }
   .pos { font-size: 12px; color: var(--mark); }
   .tag { font-size: 11px; color: var(--muted); }
+  .name { color: var(--ink); }
+  .name:hover { color: var(--mark); }
 
   @media (max-width: 900px) {
     .grid { grid-template-columns: minmax(0, 1fr); gap: 56px; padding-top: 48px; }
