@@ -236,16 +236,17 @@ img { display: block; max-width: 100%; }
   .tile { width: 100%; height: auto; aspect-ratio: 1 / 1; }
 }
 
-/* Raster van projecttegels: 3 per rij, vaste maat */
+/* Raster van projecttegels: tot 3 per rij */
 .tile-grid {
   display: grid;
-  grid-template-columns: repeat(3, var(--tile));
+  grid-template-columns: repeat(3, minmax(0, var(--tile)));
   justify-content: space-between;
+  column-gap: 24px;
   row-gap: 1.5cm;
   margin-top: 56px;
 }
-@media (max-width: 1220px) {
-  .tile-grid { grid-template-columns: repeat(2, var(--tile)); justify-content: space-evenly; }
+@media (width < 1024px) {
+  .tile-grid { grid-template-columns: repeat(2, minmax(0, var(--tile))); justify-content: space-evenly; }
 }
 @media (max-width: 800px) {
   .tile-grid { grid-template-columns: minmax(0, var(--tile)); justify-content: center; }

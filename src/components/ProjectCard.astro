@@ -23,8 +23,9 @@ const { title, category, description, date, image } = project;
 </a>
 
 <style>
-  .card { display: flex; flex-direction: column; width: var(--tile); max-width: 100%; color: var(--ink); }
+  .card { display: flex; flex-direction: column; width: var(--tile); max-width: 100%; color: var(--ink); overflow-wrap: anywhere; }
   .card:hover h3 { color: var(--mark); }
+  .tile { width: 100%; height: auto; aspect-ratio: 1 / 1; }
   .tile img { transition: filter 0.3s ease; }
   .card:hover .tile img { filter: brightness(1.08); }
   .nr {
@@ -40,6 +41,7 @@ const { title, category, description, date, image } = project;
   }
   .meta {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: 12px;
     margin-top: 20px;
