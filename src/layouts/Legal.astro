@@ -1,0 +1,27 @@
+---
+import Base from './Base.astro';
+import { renderMarkdown } from '../lib/content';
+
+interface Props {
+  title: string;
+  description: string;
+  markdown: string;
+}
+
+const { title, description, markdown } = Astro.props;
+---
+
+<Base title={title} description={description}>
+  <div class="container legal">
+    <article class="prose" lang="en" set:html={renderMarkdown(markdown)} />
+  </div>
+</Base>
+
+<style>
+  .legal { padding-top: 72px; }
+  .prose :global(h2::before) { content: none; }
+
+  @media (max-width: 900px) {
+    .legal { padding-top: 48px; }
+  }
+</style>
